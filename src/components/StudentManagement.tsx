@@ -380,8 +380,82 @@ export const StudentManagement: React.FC<StudentManagementProps> = ({
         </div>
       </div>
 
-      {/* Main Table (Section 3: Data Peserta Table) */}
-      <div className="sports-glass rounded-3xl border-emerald-500/20 overflow-hidden shadow-2xl">
+      {/* Mobile Card List (< md) for optimal touch response on smartphones */}
+      <div className="md:hidden space-y-3">
+        {filteredStudents.length > 0 ? (
+          filteredStudents.map((student, idx) => (
+            <div
+              key={student.id}
+              className="sports-glass p-4 rounded-2xl border-slate-800 hover:border-emerald-500/40 transition-all space-y-3"
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex items-center gap-2.5">
+                  <span className="w-6 h-6 rounded-full bg-slate-800 border border-slate-700 text-slate-400 text-xs font-mono font-bold flex items-center justify-center">
+                    {idx + 1}
+                  </span>
+                  <div>
+                    <button
+                      onClick={() => onSelectStudentProfile(student)}
+                      className="font-bold text-white text-sm hover:text-emerald-400 text-left transition-colors flex items-center gap-1.5"
+                    >
+                      <span>{student.name}</span>
+                      <Eye className="w-3.5 h-3.5 text-emerald-400" />
+                    </button>
+                    <p className="text-[11px] text-slate-400 mt-0.5">
+                      Kelas <span className="text-emerald-400 font-semibold">{student.grade}</span> • No. Absen <span className="text-slate-300 font-mono">{student.absenNo}</span> • JK: <span className="text-cyan-400">{student.gender || 'L'}</span>
+                    </p>
+                  </div>
+                </div>
+
+                <span
+                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                    student.status === 'Aktif'
+                      ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
+                      : 'bg-slate-800 text-slate-400 border border-slate-700'
+                  }`}
+                >
+                  {student.status}
+                </span>
+              </div>
+
+              {/* Mobile Actions */}
+              <div className="flex items-center justify-between pt-2 border-t border-slate-800/80">
+                <button
+                  onClick={() => onSelectStudentProfile(student)}
+                  className="px-3 py-1.5 rounded-xl bg-slate-900 border border-emerald-500/30 text-emerald-300 text-xs font-semibold flex items-center gap-1.5 hover:bg-emerald-950/40"
+                >
+                  <Eye className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Lihat Profil</span>
+                </button>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handleOpenEdit(student)}
+                    className="p-2 rounded-xl bg-slate-800 hover:bg-emerald-950 text-slate-300 hover:text-emerald-400 border border-slate-700 transition-colors"
+                    title="Edit Peserta"
+                  >
+                    <Edit2 className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => handleOpenDelete(student)}
+                    className="p-2 rounded-xl bg-slate-800 hover:bg-rose-950 text-slate-300 hover:text-rose-400 border border-slate-700 transition-colors"
+                    title="Hapus Peserta"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="sports-glass p-8 text-center rounded-2xl border-slate-800 text-slate-400 text-xs">
+            Tidak ada data peserta yang cocok dengan pencarian.
+          </div>
+        )}
+      </div>
+
+      {/* Main Table for Desktop and Tablet (hidden on mobile, visible on md+) */}
+      <div className="hidden md:block sports-glass rounded-3xl border-emerald-500/20 overflow-hidden shadow-2xl">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs sm:text-sm">
             <thead className="bg-slate-900/90 border-b border-slate-800 text-slate-300 uppercase tracking-wider text-[11px] font-bold">

@@ -239,9 +239,45 @@ const INITIAL_DOCUMENTATION: DocumentationItem[] = [
   }
 ];
 
-// Listeners for multi-component reactivity
+// Listeners for multi-component reactivity & cross-tab real-time sync
 type Listener = () => void;
 const listeners: Set<Listener> = new Set();
+
+// BroadcastChannel for instant cross-tab real-time sync across devices / browser tabs
+let syncChannel: BroadcastChannel | null = null;
+try {
+  if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+    syncChannel = new BroadcastChannel('badminton_realtime_sync');
+    syncChannel.onmessage = (event) => {
+      if (event.data?.type === 'STORAGE_UPDATED') {
+        listeners.forEach((fn) => {
+          try {
+            fn();
+          } catch (e) {
+            console.error('Cross-tab broadcast listener error:', e);
+          }
+        });
+      }
+    };
+  }
+} catch (err) {
+  console.warn('BroadcastChannel not supported or error:', err);
+}
+
+// Window Storage event for cross-tab sync compatibility in older browsers
+if (typeof window !== 'undefined') {
+  window.addEventListener('storage', (e) => {
+    if (e.key && Object.values(STORAGE_KEYS).includes(e.key)) {
+      listeners.forEach((fn) => {
+        try {
+          fn();
+        } catch (err) {
+          console.error('Storage event listener error:', err);
+        }
+      });
+    }
+  });
+}
 
 export const subscribeStorage = (fn: Listener) => {
   listeners.add(fn);
@@ -252,6 +288,7 @@ export const subscribeStorage = (fn: Listener) => {
 export const subscribeToStorage = subscribeStorage;
 
 const notifySubscribers = () => {
+  // 1. Notify local in-memory subscribers synchronously
   listeners.forEach((fn) => {
     try {
       fn();
@@ -259,6 +296,22 @@ const notifySubscribers = () => {
       console.error('Storage subscriber error:', e);
     }
   });
+
+  // 2. Broadcast to other tabs/windows in real time
+  if (syncChannel) {
+    try {
+      syncChannel.postMessage({ type: 'STORAGE_UPDATED', timestamp: Date.now() });
+    } catch (e) {
+      console.warn('BroadcastChannel message error:', e);
+    }
+  }
+
+  // 3. Dispatch window CustomEvent for components listening within the same tab
+  if (typeof window !== 'undefined') {
+    try {
+      window.dispatchEvent(new CustomEvent('badminton_data_changed', { detail: { timestamp: Date.now() } }));
+    } catch {}
+  }
 };
 
 // Safe LocalStorage Handlers
@@ -512,7 +565,7 @@ export const setStudentAttendance = (
   return { success: true, message: 'Absensi tersimpan', record };
 };
 
-// Bulk Save Attendance for a Date
+// Bulk Save Attendance for a Date (Optimized Atomic Real-Time Batch)
 export const saveBulkAttendance = (
   date: string,
   day: string,
@@ -523,6 +576,10 @@ export const saveBulkAttendance = (
   notes?: string
 ): { total: number; hadir: number; ijin: number; alpa: number; percentage: number } => {
   const students = getStudents();
+  const identity = getIdentity();
+  const records = getAttendanceRecords();
+  const now = new Date().toISOString();
+
   let hadir = 0;
   let ijin = 0;
   let alpa = 0;
@@ -533,8 +590,44 @@ export const saveBulkAttendance = (
     else if (status === 'Ijin') ijin++;
     else if (status === 'Alpa') alpa++;
 
-    setStudentAttendance(date, day, student, status, startTime, endTime, material, notes);
+    const index = records.findIndex((r) => r.date === date && r.studentId === student.id);
+    if (index >= 0) {
+      records[index] = {
+        ...records[index],
+        status,
+        day,
+        studentGrade: student.grade,
+        studentAbsenNo: student.absenNo,
+        startTime: startTime || records[index].startTime || '07:30',
+        endTime: endTime || records[index].endTime || '09:00',
+        material: material || records[index].material || 'Latihan Rutin Bulutangkis',
+        notes: notes !== undefined ? notes : records[index].notes,
+        updatedAt: now
+      };
+    } else {
+      records.push({
+        id: `att-${date.replace(/-/g, '')}-${student.id}`,
+        date,
+        day,
+        studentId: student.id,
+        studentName: student.name,
+        grade: student.grade,
+        absenNo: student.absenNo,
+        studentGrade: student.grade,
+        studentAbsenNo: student.absenNo,
+        status,
+        startTime: startTime || '07:30',
+        endTime: endTime || '09:00',
+        material: material || 'Latihan Rutin Bulutangkis',
+        notes: notes || '',
+        teacherName: identity.teacherName,
+        teacherNip: identity.teacherNip,
+        timestamp: now
+      });
+    }
   });
+
+  saveAttendanceRecords(records);
 
   const total = students.length;
   const percentage = total > 0 ? Number(((hadir / total) * 100).toFixed(2)) : 0;

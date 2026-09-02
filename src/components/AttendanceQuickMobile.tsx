@@ -8,6 +8,7 @@ import {
 } from '../types';
 import {
   setStudentAttendance,
+  saveBulkAttendance,
   getAttendanceRecords
 } from '../utils/storage';
 import {
@@ -101,10 +102,19 @@ export const AttendanceQuickMobile: React.FC<AttendanceQuickMobileProps> = ({
     students.forEach((s) => {
       if (s.status === 'Aktif') {
         newMap[s.id] = 'Hadir';
-        setStudentAttendance(selectedDate, selectedDay, s, 'Hadir', '07:30', '09:00', BADMINTON_MATERIALS[0]);
       }
     });
     setAttendanceMap(newMap);
+
+    saveBulkAttendance(
+      selectedDate,
+      selectedDay,
+      newMap,
+      '07:30',
+      '09:00',
+      BADMINTON_MATERIALS[0]
+    );
+
     showToast('Semua peserta ditandai Hadir! 🟢', 'success');
   };
 

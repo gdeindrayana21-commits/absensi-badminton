@@ -111,11 +111,13 @@ export const AttendanceDaily: React.FC<AttendanceDailyProps> = ({
     setAttendanceMap(map);
   }, [selectedDate, attendanceRecords, students]);
 
-  // Real-time Autosave Single Student Status (Section 10)
+  // Real-time Instant Autosave Single Student Status (Zero-delay UI update & notification)
   const handleStatusChange = (student: Student, status: AttendanceStatus) => {
-    setIsSaving(true);
+    // 1. Instant optimistic state update
     setAttendanceMap((prev) => ({ ...prev, [student.id]: status }));
+    setIsSaving(true);
 
+    // 2. Synchronous save to storage with real-time broadcast
     const res = setStudentAttendance(
       selectedDate,
       selectedDay,
@@ -127,16 +129,16 @@ export const AttendanceDaily: React.FC<AttendanceDailyProps> = ({
       sessionNotes
     );
 
-    setTimeout(() => {
-      setIsSaving(false);
-      const now = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-      setLastSavedTime(now);
-      if (res.success) {
-        showToast(`Absensi ${student.name} tersimpan: ${status}`, 'success');
-      } else {
-        showToast('Gagal menyimpan data. Silakan coba lagi.', 'error');
-      }
-    }, 150);
+    // 3. Fast feedback timestamp and toast without lag
+    setIsSaving(false);
+    const now = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    setLastSavedTime(now);
+
+    if (res.success) {
+      showToast(`Absensi ${student.name} tersimpan: ${status}`, 'success');
+    } else {
+      showToast('Gagal menyimpan data. Silakan coba lagi.', 'error');
+    }
   };
 
   // Bulk Mark All as Hadir
@@ -364,8 +366,94 @@ export const AttendanceDaily: React.FC<AttendanceDailyProps> = ({
         </div>
       </div>
 
-      {/* Table Presensi (Section 8: Absensi Harian Table) */}
-      <div className="sports-glass rounded-3xl border-emerald-500/20 overflow-hidden shadow-2xl">
+      {/* Mobile Card View (< md) for optimal touch response on smartphones */}
+      <div className="md:hidden space-y-3">
+        {filteredStudents.length > 0 ? (
+          filteredStudents.map((student, idx) => {
+            const currentStatus = attendanceMap[student.id] || 'Alpa';
+            return (
+              <div
+                key={student.id}
+                className="sports-glass p-4 rounded-2xl border-slate-800 hover:border-emerald-500/40 transition-all space-y-3"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="w-6 h-6 rounded-full bg-slate-800 border border-slate-700 text-slate-400 text-xs font-mono font-bold flex items-center justify-center">
+                      {idx + 1}
+                    </span>
+                    <div>
+                      <h4 className="font-bold text-white text-sm leading-tight">{student.name}</h4>
+                      <p className="text-[11px] text-slate-400">
+                        Kelas <span className="text-emerald-400 font-semibold">{student.grade}</span> • No. Absen <span className="text-slate-300 font-mono">{student.absenNo}</span>
+                      </p>
+                    </div>
+                  </div>
+                  <span
+                    className={`text-[10px] px-2.5 py-0.5 rounded-full font-bold uppercase ${
+                      currentStatus === 'Hadir'
+                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
+                        : currentStatus === 'Ijin'
+                        ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40'
+                        : 'bg-rose-500/20 text-rose-400 border border-rose-500/40'
+                    }`}
+                  >
+                    {currentStatus}
+                  </span>
+                </div>
+
+                {/* 3 Full Touch Buttons */}
+                <div className="grid grid-cols-3 gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => handleStatusChange(student, 'Hadir')}
+                    className={`py-2.5 px-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer active:scale-95 ${
+                      currentStatus === 'Hadir'
+                        ? 'bg-emerald-500 text-slate-950 font-black shadow-md shadow-emerald-500/30'
+                        : 'bg-slate-900 border border-slate-800 text-emerald-400 hover:bg-emerald-950/40'
+                    }`}
+                  >
+                    <span>🟢</span>
+                    <span>HADIR</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleStatusChange(student, 'Ijin')}
+                    className={`py-2.5 px-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer active:scale-95 ${
+                      currentStatus === 'Ijin'
+                        ? 'bg-amber-500 text-slate-950 font-black shadow-md shadow-amber-500/30'
+                        : 'bg-slate-900 border border-slate-800 text-amber-400 hover:bg-amber-950/40'
+                    }`}
+                  >
+                    <span>🟡</span>
+                    <span>IJIN</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleStatusChange(student, 'Alpa')}
+                    className={`py-2.5 px-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer active:scale-95 ${
+                      currentStatus === 'Alpa'
+                        ? 'bg-rose-500 text-white font-black shadow-md shadow-rose-500/30'
+                        : 'bg-slate-900 border border-slate-800 text-rose-400 hover:bg-rose-950/40'
+                    }`}
+                  >
+                    <span>🔴</span>
+                    <span>ALPA</span>
+                  </button>
+                </div>
+              </div>
+            );
+          })
+        ) : (
+          <div className="sports-glass p-8 text-center rounded-2xl border-slate-800 text-slate-400 text-xs">
+            Tidak ada siswa yang sesuai kriteria pencarian.
+          </div>
+        )}
+      </div>
+
+      {/* Table Presensi for Desktop & Tablet (hidden on mobile, visible on md+) */}
+      <div className="hidden md:block sports-glass rounded-3xl border-emerald-500/20 overflow-hidden shadow-2xl">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs sm:text-sm">
             <thead className="bg-slate-900/90 border-b border-slate-800 text-slate-300 uppercase tracking-wider text-[11px] font-bold">

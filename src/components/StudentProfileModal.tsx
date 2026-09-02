@@ -113,17 +113,17 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
-      <div className="relative w-full max-w-2xl bg-slate-900 border border-emerald-500/40 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 max-h-[90vh] flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-md">
+      <div className="relative w-full max-w-2xl bg-slate-900 border border-emerald-500/40 rounded-3xl p-4 sm:p-8 shadow-2xl space-y-4 sm:space-y-6 max-h-[92vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-start justify-between border-b border-slate-800 pb-4">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center font-bold text-2xl font-heading shadow-lg shadow-emerald-500/20">
+        <div className="flex items-start justify-between border-b border-slate-800 pb-3 sm:pb-4">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center font-bold text-xl sm:text-2xl font-heading shadow-lg shadow-emerald-500/20">
               🏸
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-xl font-extrabold text-white font-heading">
+                <h3 className="text-base sm:text-xl font-extrabold text-white font-heading">
                   {student.name}
                 </h3>
                 <span
@@ -136,7 +136,7 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
                   {student.status}
                 </span>
               </div>
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-slate-400 mt-0.5 sm:mt-1">
                 Kelas <strong className="text-emerald-400">{student.grade}</strong> • No. Absen <strong className="text-white">{student.absenNo}</strong> • JK: <strong className="text-cyan-400">{student.gender || 'L'}</strong>
               </p>
             </div>
@@ -144,7 +144,7 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
 
           <button
             onClick={onClose}
-            className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
+            className="p-1.5 sm:p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -226,10 +226,10 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
         </div>
 
         {/* Footer actions */}
-        <div className="flex items-center justify-between pt-3 border-t border-slate-800">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 pt-3 border-t border-slate-800">
           <button
             onClick={handleExportIndividualPdf}
-            className="px-3.5 py-2 rounded-xl bg-slate-900 border border-emerald-500/40 hover:bg-emerald-950/40 text-emerald-300 text-xs font-bold flex items-center gap-1.5 transition-all shadow cursor-pointer"
+            className="px-3.5 py-2.5 sm:py-2 rounded-xl bg-slate-900 border border-emerald-500/40 hover:bg-emerald-950/40 text-emerald-300 text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow cursor-pointer"
           >
             <Download className="w-4 h-4 text-emerald-400" />
             <span>Unduh Kartu Presensi Siswa (PDF)</span>
@@ -237,7 +237,7 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
 
           <button
             onClick={onClose}
-            className="px-5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold transition-colors cursor-pointer"
+            className="px-5 py-2.5 sm:py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold transition-colors cursor-pointer text-center"
           >
             TUTUP
           </button>
