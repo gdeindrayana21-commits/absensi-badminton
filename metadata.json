@@ -1,0 +1,6 @@
+{
+  "name": "Absensi Bulutangkis SMAN 1 Tejakula",
+  "description": "Sistem Informasi & Absensi Real-time Ekstrakurikuler Bulutangkis SMA Negeri 1 Tejakula dengan Rekapitulasi, Ekspor Excel/PDF, dan Manajemen Latihan.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
