@@ -9,6 +9,19 @@ import {
   DEFAULT_SCHOOL_IDENTITY,
   AttendanceSummary
 } from '../types';
+import {
+  pushToCloud,
+  initCloudSync,
+  forceSyncAll,
+  subscribeSyncStatus,
+  getSyncState,
+  compressImageBase64,
+  SyncStatus,
+  CloudSyncState
+} from './cloudSync';
+
+export { subscribeSyncStatus, getSyncState, compressImageBase64 };
+export type { SyncStatus, CloudSyncState };
 
 const STORAGE_KEYS = {
   STUDENTS: 'badminton_tejakula_students',
@@ -330,9 +343,12 @@ export const getStudents = (): Student[] => {
   }
 };
 
-export const saveStudents = (students: Student[]) => {
+export const saveStudents = (students: Student[], syncToCloud = true) => {
   localStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify(students || []));
   notifySubscribers();
+  if (syncToCloud) {
+    pushToCloud('students', students || []);
+  }
 };
 
 export const getAttendanceRecords = (): AttendanceRecord[] => {
@@ -356,9 +372,12 @@ export const getAttendanceRecords = (): AttendanceRecord[] => {
   }
 };
 
-export const saveAttendanceRecords = (records: AttendanceRecord[]) => {
+export const saveAttendanceRecords = (records: AttendanceRecord[], syncToCloud = true) => {
   localStorage.setItem(STORAGE_KEYS.ATTENDANCE, JSON.stringify(records || []));
   notifySubscribers();
+  if (syncToCloud) {
+    pushToCloud('attendance', records || []);
+  }
 };
 
 export const getSchedules = (): TrainingSchedule[] => {
@@ -376,9 +395,12 @@ export const getSchedules = (): TrainingSchedule[] => {
   }
 };
 
-export const saveSchedules = (schedules: TrainingSchedule[]) => {
+export const saveSchedules = (schedules: TrainingSchedule[], syncToCloud = true) => {
   localStorage.setItem(STORAGE_KEYS.SCHEDULES, JSON.stringify(schedules || []));
   notifySubscribers();
+  if (syncToCloud) {
+    pushToCloud('schedules', schedules || []);
+  }
 };
 
 export const updateSchedule = (
@@ -425,9 +447,12 @@ export const getActivityNotes = (): ActivityNote[] => {
   }
 };
 
-export const saveActivityNotes = (notes: ActivityNote[]) => {
+export const saveActivityNotes = (notes: ActivityNote[], syncToCloud = true) => {
   localStorage.setItem(STORAGE_KEYS.ACTIVITY_NOTES, JSON.stringify(notes || []));
   notifySubscribers();
+  if (syncToCloud) {
+    pushToCloud('notes', notes || []);
+  }
 };
 
 export const updateActivityNote = (
@@ -462,9 +487,12 @@ export const getDocumentation = (): DocumentationItem[] => {
   }
 };
 
-export const saveDocumentation = (docs: DocumentationItem[]) => {
+export const saveDocumentation = (docs: DocumentationItem[], syncToCloud = true) => {
   localStorage.setItem(STORAGE_KEYS.DOCUMENTATION, JSON.stringify(docs || []));
   notifySubscribers();
+  if (syncToCloud) {
+    pushToCloud('documentation', docs || []);
+  }
 };
 
 export const getSchoolIdentity = (): SchoolIdentity => {
@@ -488,9 +516,12 @@ export const getSchoolIdentity = (): SchoolIdentity => {
 };
 export const getIdentity = getSchoolIdentity;
 
-export const saveSchoolIdentity = (identity: SchoolIdentity) => {
+export const saveSchoolIdentity = (identity: SchoolIdentity, syncToCloud = true) => {
   localStorage.setItem(STORAGE_KEYS.IDENTITY, JSON.stringify(identity));
   notifySubscribers();
+  if (syncToCloud) {
+    pushToCloud('identity', identity);
+  }
 };
 export const saveIdentity = saveSchoolIdentity;
 
@@ -897,5 +928,84 @@ export const resetToInitialDemoData = () => {
   localStorage.setItem(STORAGE_KEYS.DOCUMENTATION, JSON.stringify(INITIAL_DOCUMENTATION));
   localStorage.setItem(STORAGE_KEYS.IDENTITY, JSON.stringify(DEFAULT_SCHOOL_IDENTITY));
   notifySubscribers();
+  pushToCloud('students', INITIAL_STUDENTS);
+  pushToCloud('attendance', INITIAL_ATTENDANCE);
+  pushToCloud('schedules', INITIAL_SCHEDULES);
+  pushToCloud('notes', INITIAL_ACTIVITY_NOTES);
+  pushToCloud('documentation', INITIAL_DOCUMENTATION);
+  pushToCloud('identity', DEFAULT_SCHOOL_IDENTITY);
 };
 export const resetToInitialData = resetToInitialDemoData;
+
+/**
+ * Force manual cloud synchronization across devices
+ */
+export const syncCloudNow = async (): Promise<{ success: boolean; message: string }> => {
+  return await forceSyncAll(
+    () => ({
+      students: getStudents(),
+      attendance: getAttendanceRecords(),
+      schedules: getSchedules(),
+      notes: getActivityNotes(),
+      documentation: getDocumentation(),
+      identity: getSchoolIdentity()
+    }),
+    (key, remoteData) => {
+      if (!remoteData) return;
+      if (key === 'students' && Array.isArray(remoteData)) {
+        saveStudents(remoteData, false);
+      } else if (key === 'attendance' && Array.isArray(remoteData)) {
+        saveAttendanceRecords(remoteData, false);
+      } else if (key === 'schedules' && Array.isArray(remoteData)) {
+        saveSchedules(remoteData, false);
+      } else if (key === 'notes' && Array.isArray(remoteData)) {
+        saveActivityNotes(remoteData, false);
+      } else if (key === 'documentation' && Array.isArray(remoteData)) {
+        saveDocumentation(remoteData, false);
+      } else if (key === 'identity' && typeof remoteData === 'object') {
+        saveSchoolIdentity(remoteData, false);
+      }
+    }
+  );
+};
+
+// Initialize bidirectional real-time Firestore synchronization for browser clients
+if (typeof window !== 'undefined') {
+  initCloudSync(
+    (key) => {
+      switch (key) {
+        case 'students':
+          return getStudents();
+        case 'attendance':
+          return getAttendanceRecords();
+        case 'schedules':
+          return getSchedules();
+        case 'notes':
+          return getActivityNotes();
+        case 'documentation':
+          return getDocumentation();
+        case 'identity':
+          return getSchoolIdentity();
+        default:
+          return null;
+      }
+    },
+    (key, remoteData) => {
+      if (!remoteData) return;
+      if (key === 'students' && Array.isArray(remoteData)) {
+        saveStudents(remoteData, false);
+      } else if (key === 'attendance' && Array.isArray(remoteData)) {
+        saveAttendanceRecords(remoteData, false);
+      } else if (key === 'schedules' && Array.isArray(remoteData)) {
+        saveSchedules(remoteData, false);
+      } else if (key === 'notes' && Array.isArray(remoteData)) {
+        saveActivityNotes(remoteData, false);
+      } else if (key === 'documentation' && Array.isArray(remoteData)) {
+        saveDocumentation(remoteData, false);
+      } else if (key === 'identity' && typeof remoteData === 'object') {
+        saveSchoolIdentity(remoteData, false);
+      }
+    }
+  );
+}
+

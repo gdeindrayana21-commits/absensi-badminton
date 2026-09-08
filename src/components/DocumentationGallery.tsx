@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { DocumentationItem, BADMINTON_MATERIALS } from '../types';
-import { saveDocumentation } from '../utils/storage';
+import { saveDocumentation, compressImageBase64 } from '../utils/storage';
 import {
   Camera,
   Plus,
@@ -33,18 +33,18 @@ export const DocumentationGallery: React.FC<DocumentationGalleryProps> = ({
     description: 'Dokumentasi pertandingan internal ganda putra dan putri SMA Negeri 1 Tejakula.'
   });
 
-  const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (evt) => {
-      if (evt.target?.result) {
-        setFormData((prev) => ({ ...prev, imageUrl: String(evt.target?.result) }));
-        showToast('Foto berhasil dimuat!', 'success');
-      }
-    };
-    reader.readAsDataURL(file);
+    try {
+      showToast('Memproses dan mengompresi foto untuk Cloud...', 'info');
+      const compressedDataUrl = await compressImageBase64(file, 960, 960, 0.72);
+      setFormData((prev) => ({ ...prev, imageUrl: compressedDataUrl }));
+      showToast('Foto berhasil dimuat & siap disinkronkan ke HP dan Laptop!', 'success');
+    } catch {
+      showToast('Gagal memproses file foto.', 'error');
+    }
   };
 
   const handleSaveDoc = (e: React.FormEvent) => {

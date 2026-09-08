@@ -4,7 +4,9 @@ import {
   saveIdentity,
   exportFullBackupJson,
   importBackupJson,
-  resetToInitialData
+  resetToInitialData,
+  compressImageBase64,
+  syncCloudNow
 } from '../utils/storage';
 import {
   Settings,
@@ -24,7 +26,15 @@ import {
   Camera,
   User,
   Trash2,
-  Sparkles
+  Sparkles,
+  ArrowRightLeft,
+  Smartphone,
+  Laptop,
+  Cloud,
+  QrCode,
+  Copy,
+  Check,
+  RefreshCw
 } from 'lucide-react';
 import { showToast } from './Toast';
 
@@ -41,27 +51,62 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isResetConfirmOpen, setIsResetConfirmOpen] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [copied, setCopied] = useState(false);
 
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
+
+  const handleCopyLink = async () => {
+    try {
+      if (navigator.clipboard && currentUrl) {
+        await navigator.clipboard.writeText(currentUrl);
+      } else {
+        const input = document.createElement('input');
+        input.value = currentUrl;
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand('copy');
+        document.body.removeChild(input);
+      }
+      setCopied(true);
+      showToast('Tautan berhasil disalin! Buka link ini di browser HP Anda.', 'success');
+      setTimeout(() => setCopied(false), 2500);
+    } catch {
+      showToast('Gagal menyalin link otomatis.', 'warning');
+    }
+  };
+
+  const handleManualSync = async () => {
+    setIsSyncing(true);
+    try {
+      const res = await syncCloudNow();
+      if (res.success) {
+        showToast(res.message, 'success');
+      } else {
+        showToast(res.message, 'error');
+      }
+    } catch (e: any) {
+      showToast('Gagal sinkronisasi: ' + (e?.message || 'Koneksi terganggu'), 'error');
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate size (max 2MB)
-    if (file.size > 2 * 1024 * 1024) {
-      showToast('Ukuran foto maksimal 2MB!', 'warning');
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = (evt) => {
-      const base64 = evt.target?.result as string;
+    try {
+      showToast('Memproses foto guru...', 'info');
+      const compressedBase64 = await compressImageBase64(file, 600, 600, 0.75);
       setFormData((prev) => ({
         ...prev,
-        teacherPhoto: base64
+        teacherPhoto: compressedBase64
       }));
-      showToast('Foto guru pembina berhasil diunggah! Klik "Simpan Perubahan" untuk menyimpan.', 'success');
-    };
-    reader.readAsDataURL(file);
+      showToast('Foto guru pembina berhasil dimuat! Klik "Simpan Perubahan" untuk menyimpan.', 'success');
+    } catch {
+      showToast('Gagal memproses foto guru.', 'error');
+    }
   };
 
   const handleRemovePhoto = () => {
@@ -381,6 +426,98 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
           </button>
         </div>
       </form>
+
+      {/* Cloud Sync & Cross-Device Pairing (Laptop <-> HP) */}
+      <div className="sports-glass p-6 rounded-3xl border-emerald-500/30 space-y-4 shadow-xl">
+        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+              <ArrowRightLeft className="w-4 h-4" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-white font-heading uppercase tracking-wide">
+                ☁️ SINKRONISASI CLOUD OTOMATIS (LAPTOP & HP)
+              </h3>
+              <p className="text-xs text-slate-400">
+                Data presensi, siswa, dan jadwal tersambung otomatis secara real-time via Google Cloud Firestore
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleManualSync}
+            disabled={isSyncing}
+            className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold flex items-center gap-2 transition-all shadow cursor-pointer disabled:opacity-50"
+          >
+            <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
+            <span>{isSyncing ? 'Menyinkronkan...' : 'SINKRONKAN SEKARANG'}</span>
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+          {/* Status Info */}
+          <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2">
+            <div className="flex items-center gap-2">
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+              </span>
+              <span className="text-xs font-bold text-emerald-300">Firestore Cloud Terhubung</span>
+            </div>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Setiap kali Anda mengisi absensi atau memperbarui jadwal di HP, perubahan akan langsung muncul di laptop tanpa perlu refresh.
+            </p>
+          </div>
+
+          {/* Quick Copy Link */}
+          <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-slate-200">
+              <Smartphone className="w-4 h-4 text-emerald-400" />
+              <span>Buka di Smartphone (HP)</span>
+            </div>
+            <p className="text-xs text-slate-400">
+              Salin tautan ini dan kirim ke WhatsApp Anda untuk dibuka di browser HP:
+            </p>
+            <button
+              type="button"
+              onClick={handleCopyLink}
+              className="w-full py-2 px-3 rounded-xl bg-slate-800 hover:bg-emerald-950/80 border border-slate-700 hover:border-emerald-500/50 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
+            >
+              {copied ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-emerald-400" />
+                  <span className="text-emerald-400">Tautan Berhasil Disalin!</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Salin Tautan Link HP</span>
+                </>
+              )}
+            </button>
+          </div>
+
+          {/* QR Code */}
+          <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 flex flex-col items-center justify-center text-center space-y-1.5">
+            <div className="flex items-center gap-1 text-xs font-bold text-slate-200">
+              <QrCode className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Scan QR Code dari HP</span>
+            </div>
+            {currentUrl && (
+              <div className="p-1.5 bg-slate-950 rounded-xl border border-emerald-500/30">
+                <img
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(currentUrl)}&bgcolor=020617&color=34d399`}
+                  alt="QR Code HP"
+                  className="w-24 h-24 rounded-lg object-contain"
+                  loading="lazy"
+                />
+              </div>
+            )}
+            <span className="text-[10px] text-slate-500">Arahkan kamera HP ke kode ini</span>
+          </div>
+        </div>
+      </div>
 
       {/* Section 4: Backup & Restore Data (Section 21) */}
       <div className="sports-glass p-6 rounded-3xl border-cyan-500/30 space-y-4 shadow-xl">

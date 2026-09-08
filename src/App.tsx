@@ -31,6 +31,7 @@ import { AttendanceHistory } from './components/AttendanceHistory';
 import { SettingsPage } from './components/SettingsPage';
 import { StudentProfileModal } from './components/StudentProfileModal';
 import { LoginModal } from './components/LoginModal';
+import { SyncStatusModal } from './components/SyncStatusModal';
 import { Toast } from './components/Toast';
 
 export default function App() {
@@ -42,6 +43,9 @@ export default function App() {
     }
     return false;
   });
+
+  // Cloud Sync Modal State
+  const [isSyncModalOpen, setIsSyncModalOpen] = useState<boolean>(false);
 
   // Authentication State
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true); // Default true
@@ -121,6 +125,7 @@ export default function App() {
         onLogout={handleLogout}
         toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
         isSidebarOpen={isSidebarOpen}
+        onOpenSyncModal={() => setIsSyncModalOpen(true)}
       />
 
       {/* Main Layout Body */}
@@ -131,6 +136,7 @@ export default function App() {
           setActiveTab={handleNavigate}
           isOpen={isSidebarOpen}
           onClose={() => setIsSidebarOpen(false)}
+          onOpenSyncModal={() => setIsSyncModalOpen(true)}
         />
 
         {/* Dynamic View Area */}
@@ -252,6 +258,19 @@ export default function App() {
           onClose={() => setSelectedStudentForProfile(null)}
         />
       )}
+
+      {/* Cloud Sync Status & Device Pairing Modal */}
+      <SyncStatusModal
+        isOpen={isSyncModalOpen}
+        onClose={() => setIsSyncModalOpen(false)}
+        counts={{
+          students: students.length,
+          attendance: attendanceRecords.length,
+          schedules: schedules.length,
+          notes: activityNotes.length,
+          docs: documentation.length
+        }}
+      />
     </div>
   );
 }

@@ -13,7 +13,8 @@ import {
   FileText,
   Save,
   Zap,
-  Award
+  Award,
+  ArrowRightLeft
 } from 'lucide-react';
 import { exportMasterDatabaseExcel, exportOfficialSchoolPDF } from '../utils/exportUtils';
 import { showToast } from './Toast';
@@ -26,6 +27,7 @@ interface NavbarProps {
   isSidebarOpen: boolean;
   activeTab: string;
   setActiveTab: (tab: string) => void;
+  onOpenSyncModal?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -35,7 +37,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   toggleSidebar,
   isSidebarOpen,
   activeTab,
-  setActiveTab
+  setActiveTab,
+  onOpenSyncModal
 }) => {
   const [time, setTime] = useState<string>('');
   const [dateStr, setDateStr] = useState<string>('');
@@ -155,6 +158,24 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span>Cetak PDF</span>
             </button>
           </div>
+
+          {/* Cloud Sync Laptop & HP Status Indicator */}
+          {onOpenSyncModal && (
+            <button
+              onClick={onOpenSyncModal}
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-emerald-500/30 text-emerald-400 hover:border-emerald-500/60 transition-all text-xs font-semibold cursor-pointer shadow-sm group"
+              title="Status Sinkronisasi Cloud Laptop & HP (Klik untuk QR Code & Link)"
+            >
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              <ArrowRightLeft className="w-3.5 h-3.5 text-emerald-400 group-hover:rotate-180 transition-transform duration-500" />
+              <span className="font-bold text-[11px] sm:text-xs">
+                <span className="hidden md:inline">Sinkron </span>Laptop & HP
+              </span>
+            </button>
+          )}
 
           {/* Quick Mobile Absen Button */}
           <button

@@ -22,13 +22,15 @@ interface SidebarProps {
   setActiveTab: (tab: string) => void;
   isOpen: boolean;
   onClose: () => void;
+  onOpenSyncModal?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
   activeTab,
   setActiveTab,
   isOpen,
-  onClose
+  onClose,
+  onOpenSyncModal
 }) => {
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, badge: null, desc: 'Statistik & Ringkasan' },
@@ -107,16 +109,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
   );
 
   const statusBadge = (
-    <div className="p-3.5 rounded-2xl bg-gradient-to-br from-slate-900 via-slate-900/90 to-emerald-950/40 border border-emerald-500/20 text-center">
+    <div
+      onClick={onOpenSyncModal}
+      className={`p-3.5 rounded-2xl bg-gradient-to-br from-slate-900 via-slate-900/90 to-emerald-950/40 border border-emerald-500/25 hover:border-emerald-500/50 transition-all text-center group ${
+        onOpenSyncModal ? 'cursor-pointer hover:bg-slate-800/80 shadow-md' : ''
+      }`}
+      title="Klik untuk melihat Status Sinkronisasi Cloud Laptop & HP"
+    >
       <div className="flex items-center justify-center gap-2 mb-1.5">
         <span className="relative flex h-2.5 w-2.5">
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
           <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
         </span>
-        <span className="text-xs font-bold text-emerald-300">Sistem Presensi Aktif</span>
+        <span className="text-xs font-bold text-emerald-300 group-hover:text-emerald-200">
+          Sinkron Laptop & HP Aktif
+        </span>
       </div>
       <p className="text-[11px] text-slate-400 leading-relaxed">
-        Data tersinkron otomatis & siap unduh format administrasi sekolah.
+        Data terhubung via Firebase Cloud. Klik untuk scan QR Code atau salin link HP.
       </p>
     </div>
   );
