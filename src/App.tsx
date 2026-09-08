@@ -36,7 +36,12 @@ import { Toast } from './components/Toast';
 export default function App() {
   // Navigation State
   const [activeTab, setActiveTab] = useState<string>('dashboard');
-  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth >= 1024;
+    }
+    return false;
+  });
 
   // Authentication State
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true); // Default true
@@ -78,9 +83,22 @@ export default function App() {
     return () => unsubscribe();
   }, []);
 
+  // Listen for Escape key to close mobile menu
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isSidebarOpen && window.innerWidth < 1024) {
+        setIsSidebarOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isSidebarOpen]);
+
   const handleNavigate = (tab: string) => {
     setActiveTab(tab);
-    setIsSidebarOpen(false);
+    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+      setIsSidebarOpen(false);
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
