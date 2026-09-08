@@ -363,13 +363,13 @@ export const exportAttendanceRecapPdf = (
   doc.save(`Rekap_Absensi_Bulutangkis_${periodText.replace(/\s+/g, '_')}_SMAN1Tejakula.pdf`);
 };
 
-// 6. Download Template Excel for Student Import
+// 6. Download Template Excel for Student Import (Tanpa Kolom Jenis Kelamin)
 export const downloadStudentTemplateExcel = () => {
   const templateData = [
-    { 'Nama Peserta': 'I Gede Aditya Pratama', 'Kelas': 'X.1', 'Jenis Kelamin': 'L', 'No Telepon/WA': '081234567890' },
-    { 'Nama Peserta': 'Ni Made Bintang Pradnya', 'Kelas': 'X.2', 'Jenis Kelamin': 'P', 'No Telepon/WA': '081234567891' },
-    { 'Nama Peserta': 'I Komang Candra Wibawa', 'Kelas': 'XI. 1', 'Jenis Kelamin': 'L', 'No Telepon/WA': '081234567892' },
-    { 'Nama Peserta': 'Ni Ketut Dian Lestari', 'Kelas': 'XII. 3', 'Jenis Kelamin': 'P', 'No Telepon/WA': '081234567893' }
+    { 'Nama Peserta': 'I Gede Aditya Pratama', 'Kelas': 'X.1', 'No Telepon/WA': '081234567890' },
+    { 'Nama Peserta': 'Ni Made Bintang Pradnya', 'Kelas': 'X.2', 'No Telepon/WA': '081234567891' },
+    { 'Nama Peserta': 'I Komang Candra Wibawa', 'Kelas': 'XI. 1', 'No Telepon/WA': '081234567892' },
+    { 'Nama Peserta': 'Ni Ketut Dian Lestari', 'Kelas': 'XII. 3', 'No Telepon/WA': '081234567893' }
   ];
 
   const ws = XLSX.utils.json_to_sheet(templateData);

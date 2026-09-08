@@ -742,7 +742,7 @@ export const saveBulkAttendance = (
   let alpa = 0;
 
   students.forEach((student) => {
-    const status = attendanceMap[student.id] || 'Alpa';
+    const status = attendanceMap[student.id] || 'Hadir';
     if (status === 'Hadir') hadir++;
     else if (status === 'Ijin') ijin++;
     else if (status === 'Alpa') alpa++;

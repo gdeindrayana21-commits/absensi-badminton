@@ -91,24 +91,24 @@ export const AttendanceDaily: React.FC<AttendanceDailyProps> = ({
   // Load existing attendance for selectedDate or default all to 'Hadir'
   useEffect(() => {
     const existing = attendanceRecords.filter((r) => r.date === selectedDate);
+    const existingMap: Record<string, AttendanceStatus> = {};
+    existing.forEach((rec) => {
+      existingMap[rec.studentId] = rec.status;
+    });
+
     const map: Record<string, AttendanceStatus> = {};
+    students.forEach((s) => {
+      if (s.status === 'Aktif') {
+        map[s.id] = existingMap[s.id] || 'Hadir';
+      }
+    });
 
     if (existing.length > 0) {
-      existing.forEach((rec) => {
-        map[rec.studentId] = rec.status;
-      });
       // Load material & time from existing if available
       if (existing[0].material) setMaterial(existing[0].material);
       if (existing[0].startTime) setStartTime(existing[0].startTime);
       if (existing[0].endTime) setEndTime(existing[0].endTime);
       if (existing[0].notes) setSessionNotes(existing[0].notes);
-    } else {
-      // Default to Hadir for active students
-      students.forEach((s) => {
-        if (s.status === 'Aktif') {
-          map[s.id] = 'Hadir';
-        }
-      });
     }
 
     setAttendanceMap(map);
@@ -117,20 +117,41 @@ export const AttendanceDaily: React.FC<AttendanceDailyProps> = ({
   // Real-time Instant Autosave Single Student Status (Zero-delay UI update & notification)
   const handleStatusChange = (student: Student, status: AttendanceStatus) => {
     // 1. Instant optimistic state update
-    setAttendanceMap((prev) => ({ ...prev, [student.id]: status }));
+    const updatedMap: Record<string, AttendanceStatus> = { ...attendanceMap, [student.id]: status };
+    students.forEach((s) => {
+      if (s.status === 'Aktif' && !updatedMap[s.id]) {
+        updatedMap[s.id] = 'Hadir';
+      }
+    });
+    setAttendanceMap(updatedMap);
     setIsSaving(true);
 
     // 2. Synchronous save to storage with real-time broadcast
-    const res = setStudentAttendance(
-      selectedDate,
-      selectedDay,
-      student,
-      status,
-      startTime,
-      endTime,
-      material,
-      sessionNotes
-    );
+    const existingForDate = attendanceRecords.filter((r) => r.date === selectedDate);
+    let res: { success: boolean; message: string };
+    if (existingForDate.length <= 1) {
+      saveBulkAttendance(
+        selectedDate,
+        selectedDay,
+        updatedMap,
+        startTime,
+        endTime,
+        material,
+        sessionNotes
+      );
+      res = { success: true, message: 'Absensi tersimpan' };
+    } else {
+      res = setStudentAttendance(
+        selectedDate,
+        selectedDay,
+        student,
+        status,
+        startTime,
+        endTime,
+        material,
+        sessionNotes
+      );
+    }
 
     // 3. Fast feedback timestamp and toast without lag
     setIsSaving(false);
@@ -138,7 +159,8 @@ export const AttendanceDaily: React.FC<AttendanceDailyProps> = ({
     setLastSavedTime(now);
 
     if (res.success) {
-      showToast(`Absensi ${student.name} tersimpan: ${status}`, 'success');
+      const emoji = status === 'Hadir' ? '🟢' : status === 'Ijin' ? '🟡' : '🔴';
+      showToast(`${emoji} ${student.name}: ${status}`, 'success');
     } else {
       showToast('Gagal menyimpan data. Silakan coba lagi.', 'error');
     }
@@ -196,7 +218,7 @@ export const AttendanceDaily: React.FC<AttendanceDailyProps> = ({
 
   // Calculate live counters
   const activeStudents = students.filter((s) => s.status === 'Aktif');
-  const countHadir = activeStudents.filter((s) => (attendanceMap[s.id] || 'Alpa') === 'Hadir').length;
+  const countHadir = activeStudents.filter((s) => (attendanceMap[s.id] || 'Hadir') === 'Hadir').length;
   const countIjin = activeStudents.filter((s) => attendanceMap[s.id] === 'Ijin').length;
   const countAlpa = activeStudents.filter((s) => attendanceMap[s.id] === 'Alpa').length;
   const livePct = activeStudents.length > 0 ? ((countHadir / activeStudents.length) * 100).toFixed(1) : '0';
@@ -393,7 +415,7 @@ export const AttendanceDaily: React.FC<AttendanceDailyProps> = ({
       <div className="md:hidden space-y-3">
         {filteredStudents.length > 0 ? (
           filteredStudents.map((student, idx) => {
-            const currentStatus = attendanceMap[student.id] || 'Alpa';
+            const currentStatus = attendanceMap[student.id] || 'Hadir';
             return (
               <div
                 key={student.id}
@@ -489,7 +511,7 @@ export const AttendanceDaily: React.FC<AttendanceDailyProps> = ({
             </thead>
             <tbody className="divide-y divide-slate-800/60">
               {filteredStudents.map((student, idx) => {
-                const currentStatus = attendanceMap[student.id] || 'Alpa';
+                const currentStatus = attendanceMap[student.id] || 'Hadir';
 
                 return (
                   <tr

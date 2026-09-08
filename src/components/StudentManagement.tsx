@@ -865,7 +865,7 @@ export const StudentManagement: React.FC<StudentManagementProps> = ({
                   IMPORT DATA SISWA DARI EXCEL
                 </h3>
                 <p className="text-xs text-slate-400">
-                  Format Kolom: <strong>Nama Peserta | Kelas</strong>
+                  Format Kolom: <strong>Nama Peserta | Kelas</strong> <span className="text-emerald-400">(Kolom Jenis Kelamin tidak diperlukan)</span>
                 </p>
               </div>
               <button
