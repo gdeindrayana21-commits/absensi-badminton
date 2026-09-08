@@ -30,9 +30,11 @@ import {
   Info,
   ChevronDown,
   RotateCcw,
-  CheckCheck
+  CheckCheck,
+  Edit3
 } from 'lucide-react';
 import { showToast } from './Toast';
+import { EditSessionDateModal } from './EditSessionDateModal';
 
 interface AttendanceDailyProps {
   students?: Student[];
@@ -66,6 +68,7 @@ export const AttendanceDaily: React.FC<AttendanceDailyProps> = ({
 
   // Summary Success Modal (Section 11)
   const [isSummaryModalOpen, setIsSummaryModalOpen] = useState<boolean>(false);
+  const [isEditDateModalOpen, setIsEditDateModalOpen] = useState<boolean>(false);
   const [summaryData, setSummaryData] = useState<{
     total: number;
     hadir: number;
@@ -246,18 +249,38 @@ export const AttendanceDaily: React.FC<AttendanceDailyProps> = ({
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
           {/* Date Picker */}
           <div>
-            <label className="block text-slate-300 font-bold uppercase mb-1 flex items-center gap-1.5">
-              <Calendar className="w-3.5 h-3.5 text-emerald-400" /> Tanggal Sesi
-            </label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-slate-300 font-bold uppercase flex items-center gap-1.5">
+                <Calendar className="w-3.5 h-3.5 text-emerald-400" /> Tanggal Sesi
+              </label>
+              {attendanceRecords.filter((r) => r.date === selectedDate).length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setIsEditDateModalOpen(true)}
+                  className="px-2 py-0.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 hover:text-white border border-emerald-500/40 text-[10px] font-bold flex items-center gap-1 transition-all cursor-pointer"
+                  title="Edit tanggal pelaksanaan kegiatan sesi ini"
+                >
+                  <Edit3 className="w-3 h-3" />
+                  <span>Ubah Tanggal</span>
+                </button>
+              )}
+            </div>
             <input
               type="date"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
               className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-white font-mono focus:outline-none focus:border-emerald-500"
             />
-            <span className="text-[11px] text-emerald-400 mt-0.5 block font-semibold">
-              Hari: {selectedDay}
-            </span>
+            <div className="flex items-center justify-between mt-0.5 text-[11px]">
+              <span className="text-emerald-400 font-semibold">
+                Hari: {selectedDay}
+              </span>
+              {attendanceRecords.filter((r) => r.date === selectedDate).length > 0 && (
+                <span className="text-slate-400 text-[10px]">
+                  ({attendanceRecords.filter((r) => r.date === selectedDate).length} tersimpan)
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Time Start / End */}
@@ -603,6 +626,25 @@ export const AttendanceDaily: React.FC<AttendanceDailyProps> = ({
             </button>
           </div>
         </div>
+      )}
+
+      {/* Modal Edit Tanggal Pelaksanaan Sesi Ini */}
+      {isEditDateModalOpen && (
+        <EditSessionDateModal
+          isOpen={isEditDateModalOpen}
+          onClose={() => setIsEditDateModalOpen(false)}
+          initialDate={selectedDate}
+          initialDay={selectedDay}
+          initialMaterial={material}
+          initialStartTime={startTime}
+          initialEndTime={endTime}
+          initialNotes={sessionNotes}
+          participantCount={attendanceRecords.filter((r) => r.date === selectedDate).length}
+          onSuccess={(newDate) => {
+            setSelectedDate(newDate);
+            setIsEditDateModalOpen(false);
+          }}
+        />
       )}
     </div>
   );

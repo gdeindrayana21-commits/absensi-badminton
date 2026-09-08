@@ -31,6 +31,7 @@ import {
   Users
 } from 'lucide-react';
 import { showToast } from './Toast';
+import { EditSessionDateModal } from './EditSessionDateModal';
 
 interface AttendanceHistoryProps {
   attendanceRecords?: AttendanceRecord[];
@@ -48,6 +49,15 @@ export const AttendanceHistory: React.FC<AttendanceHistoryProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [expandedDates, setExpandedDates] = useState<Record<string, boolean>>({});
   const [deleteConfirmDate, setDeleteConfirmDate] = useState<string | null>(null);
+  const [editingSession, setEditingSession] = useState<{
+    date: string;
+    day: string;
+    material: string;
+    startTime: string;
+    endTime: string;
+    notes: string;
+    recordsCount: number;
+  } | null>(null);
 
   // Group records by date
   const sessions = useMemo(() => {
@@ -212,6 +222,24 @@ export const AttendanceHistory: React.FC<AttendanceHistoryProps> = ({
                   <div className="flex items-center gap-1.5 pl-2 border-l border-slate-800">
                     <button
                       onClick={() =>
+                        setEditingSession({
+                          date: session.date,
+                          day: session.day,
+                          material: session.material,
+                          startTime: session.startTime,
+                          endTime: session.endTime,
+                          notes: session.notes,
+                          recordsCount: session.records.length
+                        })
+                      }
+                      className="px-2.5 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 hover:text-white border border-emerald-500/40 text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm cursor-pointer"
+                      title="Edit Tanggal Pelaksanaan Kegiatan"
+                    >
+                      <Calendar className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>Edit Tanggal</span>
+                    </button>
+                    <button
+                      onClick={() =>
                         exportDailyAttendancePdf(
                           session.records,
                           identity,
@@ -371,6 +399,24 @@ export const AttendanceHistory: React.FC<AttendanceHistoryProps> = ({
             </div>
           </div>
         </div>
+      )}
+
+      {/* Modal Edit Tanggal Pelaksanaan Kegiatan */}
+      {editingSession && (
+        <EditSessionDateModal
+          isOpen={!!editingSession}
+          onClose={() => setEditingSession(null)}
+          initialDate={editingSession.date}
+          initialDay={editingSession.day}
+          initialMaterial={editingSession.material}
+          initialStartTime={editingSession.startTime}
+          initialEndTime={editingSession.endTime}
+          initialNotes={editingSession.notes}
+          participantCount={editingSession.recordsCount}
+          onSuccess={() => {
+            setEditingSession(null);
+          }}
+        />
       )}
     </div>
   );

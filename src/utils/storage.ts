@@ -381,6 +381,35 @@ export const saveSchedules = (schedules: TrainingSchedule[]) => {
   notifySubscribers();
 };
 
+export const updateSchedule = (
+  id: string,
+  updated: Partial<TrainingSchedule>
+): { success: boolean; message: string } => {
+  const schedules = getSchedules();
+  const index = schedules.findIndex((s) => s.id === id);
+  if (index === -1) {
+    return { success: false, message: 'Jadwal tidak ditemukan.' };
+  }
+
+  let day = schedules[index].day;
+  if (updated.date) {
+    try {
+      const d = new Date(updated.date);
+      day = new Intl.DateTimeFormat('id-ID', { weekday: 'long' }).format(d);
+    } catch {}
+  }
+
+  schedules[index] = {
+    ...schedules[index],
+    ...updated,
+    day: updated.day || day
+  };
+
+  schedules.sort((a, b) => a.date.localeCompare(b.date));
+  saveSchedules(schedules);
+  return { success: true, message: 'Jadwal pelaksanaan kegiatan berhasil diperbarui.' };
+};
+
 export const getActivityNotes = (): ActivityNote[] => {
   try {
     const data = localStorage.getItem(STORAGE_KEYS.ACTIVITY_NOTES);
@@ -399,6 +428,23 @@ export const getActivityNotes = (): ActivityNote[] => {
 export const saveActivityNotes = (notes: ActivityNote[]) => {
   localStorage.setItem(STORAGE_KEYS.ACTIVITY_NOTES, JSON.stringify(notes || []));
   notifySubscribers();
+};
+
+export const updateActivityNote = (
+  id: string,
+  updated: Partial<ActivityNote>
+): { success: boolean; message: string } => {
+  const notes = getActivityNotes();
+  const index = notes.findIndex((n) => n.id === id);
+  if (index === -1) {
+    return { success: false, message: 'Catatan kegiatan tidak ditemukan.' };
+  }
+  notes[index] = {
+    ...notes[index],
+    ...updated
+  };
+  saveActivityNotes(notes);
+  return { success: true, message: 'Catatan kegiatan berhasil diperbarui.' };
 };
 
 export const getDocumentation = (): DocumentationItem[] => {
@@ -510,6 +556,83 @@ export const deleteAttendanceDate = (date: string): { success: boolean; message:
   const filtered = records.filter((r) => r.date !== date);
   saveAttendanceRecords(filtered);
   return { success: true, message: `Absensi tanggal ${date} berhasil dihapus.` };
+};
+
+// Edit Tanggal Pelaksanaan Sesi Kegiatan / Pindah Tanggal Absensi
+export const updateAttendanceDate = (
+  oldDate: string,
+  newDate: string,
+  updates?: {
+    material?: string;
+    startTime?: string;
+    endTime?: string;
+    notes?: string;
+  }
+): { success: boolean; message: string; count: number } => {
+  if (!oldDate || !newDate) {
+    return { success: false, message: 'Tanggal pelaksanaan tidak valid.', count: 0 };
+  }
+
+  const records = getAttendanceRecords();
+  const targetRecords = records.filter((r) => r.date === oldDate);
+  if (targetRecords.length === 0) {
+    return { success: false, message: `Tidak ditemukan rekaman presensi pada tanggal ${oldDate}.`, count: 0 };
+  }
+
+  // Hitung nama hari baru dalam bahasa Indonesia
+  let newDay = 'Sabtu';
+  try {
+    const d = new Date(newDate);
+    newDay = new Intl.DateTimeFormat('id-ID', { weekday: 'long' }).format(d);
+  } catch {}
+
+  const now = new Date().toISOString();
+
+  // Jika tanggal sama (hanya update materi, jam, atau catatan)
+  if (oldDate === newDate) {
+    records.forEach((r) => {
+      if (r.date === oldDate) {
+        if (updates?.material) r.material = updates.material;
+        if (updates?.startTime) r.startTime = updates.startTime;
+        if (updates?.endTime) r.endTime = updates.endTime;
+        if (updates?.notes !== undefined) r.notes = updates.notes;
+        r.day = newDay;
+        r.updatedAt = now;
+      }
+    });
+    saveAttendanceRecords(records);
+    return {
+      success: true,
+      message: `Informasi pelaksanaan kegiatan tanggal ${oldDate} berhasil diperbarui.`,
+      count: targetRecords.length
+    };
+  }
+
+  // Jika ubah tanggal: hapus catatan lama dan perbarui dengan tanggal baru
+  const targetStudentIds = new Set(targetRecords.map((r) => r.studentId));
+  const remainingRecords = records.filter(
+    (r) => r.date !== oldDate && !(r.date === newDate && targetStudentIds.has(r.studentId))
+  );
+
+  const updatedTargetRecords: AttendanceRecord[] = targetRecords.map((r) => ({
+    ...r,
+    id: `att-${newDate.replace(/-/g, '')}-${r.studentId}`,
+    date: newDate,
+    day: newDay,
+    material: updates?.material || r.material,
+    startTime: updates?.startTime || r.startTime,
+    endTime: updates?.endTime || r.endTime,
+    notes: updates?.notes !== undefined ? updates.notes : r.notes,
+    updatedAt: now
+  }));
+
+  saveAttendanceRecords([...remainingRecords, ...updatedTargetRecords]);
+
+  return {
+    success: true,
+    message: `Tanggal pelaksanaan kegiatan berhasil diubah dari ${oldDate} ke ${newDate} (${newDay}) untuk ${updatedTargetRecords.length} peserta.`,
+    count: updatedTargetRecords.length
+  };
 };
 
 // Autosave & Real-time Record Attendance

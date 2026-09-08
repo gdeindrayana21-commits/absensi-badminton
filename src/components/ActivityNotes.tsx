@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ActivityNote, BADMINTON_MATERIALS, SchoolIdentity } from '../types';
-import { saveActivityNotes } from '../utils/storage';
+import { saveActivityNotes, updateActivityNote } from '../utils/storage';
 import {
   FileText,
   Plus,
@@ -12,7 +12,8 @@ import {
   UserCheck,
   Sparkles,
   Trash2,
-  X
+  X,
+  Edit2
 } from 'lucide-react';
 import { showToast } from './Toast';
 
@@ -26,6 +27,8 @@ export const ActivityNotes: React.FC<ActivityNotesProps> = ({
   identity
 }) => {
   const [isAddOpen, setIsAddOpen] = useState(false);
+  const [editingNote, setEditingNote] = useState<ActivityNote | null>(null);
+
   const [formData, setFormData] = useState<Omit<ActivityNote, 'id' | 'timestamp'>>({
     date: new Date().toISOString().split('T')[0],
     material: BADMINTON_MATERIALS[0],
@@ -35,6 +38,36 @@ export const ActivityNotes: React.FC<ActivityNotesProps> = ({
     followUp: 'Fokus drill rotasi ganda dan variasi netting silang pada sesi latihan berikutnya.',
     teacherNotes: 'Tetap jaga kedisiplinan dan kekompakan tim bulutangkis SMA Negeri 1 Tejakula.'
   });
+
+  const [editFormData, setEditFormData] = useState<ActivityNote>({
+    id: '',
+    date: new Date().toISOString().split('T')[0],
+    material: BADMINTON_MATERIALS[0],
+    participantCondition: '',
+    goodPoints: '',
+    obstacles: '',
+    followUp: '',
+    teacherNotes: '',
+    timestamp: ''
+  });
+
+  const handleOpenEdit = (note: ActivityNote) => {
+    setEditingNote(note);
+    setEditFormData({ ...note });
+  };
+
+  const handleSaveEdit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingNote) return;
+
+    const res = updateActivityNote(editingNote.id, editFormData);
+    if (res.success) {
+      showToast(res.message, 'success');
+      setEditingNote(null);
+    } else {
+      showToast(res.message, 'error');
+    }
+  };
 
   const handleSaveNote = (e: React.FormEvent) => {
     e.preventDefault();
@@ -108,6 +141,13 @@ export const ActivityNotes: React.FC<ActivityNotesProps> = ({
                 <span className="text-[11px] text-slate-400">
                   Pembina: {identity.teacherName}
                 </span>
+                <button
+                  onClick={() => handleOpenEdit(note)}
+                  className="p-1.5 rounded-lg bg-slate-800 hover:bg-emerald-950 text-slate-400 hover:text-emerald-400 transition-colors cursor-pointer"
+                  title="Edit Tanggal & Catatan Kegiatan"
+                >
+                  <Edit2 className="w-3.5 h-3.5" />
+                </button>
                 <button
                   onClick={() => handleDelete(note.id)}
                   className="p-1.5 rounded-lg bg-slate-800 hover:bg-rose-950 text-slate-400 hover:text-rose-400 transition-colors"
@@ -269,6 +309,146 @@ export const ActivityNotes: React.FC<ActivityNotesProps> = ({
                   className="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold shadow-lg shadow-emerald-500/20 cursor-pointer"
                 >
                   SIMPAN JURNAL
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Note Modal */}
+      {editingNote && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+          <div className="relative w-full max-w-xl bg-slate-900 border border-emerald-500/40 rounded-3xl p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                  <Calendar className="w-4 h-4" />
+                </div>
+                <h3 className="text-base sm:text-lg font-bold text-white font-heading uppercase">
+                  EDIT CATATAN & TANGGAL KEGIATAN
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditingNote(null)}
+                className="text-slate-400 hover:text-white cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEdit} className="space-y-4 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-300 font-bold uppercase mb-1 flex items-center gap-1.5">
+                    <Calendar className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>Tanggal Pelaksanaan *</span>
+                  </label>
+                  <input
+                    type="date"
+                    value={editFormData.date}
+                    onChange={(e) => setEditFormData({ ...editFormData, date: e.target.value })}
+                    required
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white font-mono focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-300 font-bold uppercase mb-1 flex items-center gap-1.5">
+                    <Dumbbell className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>Materi / Topik Latihan *</span>
+                  </label>
+                  <select
+                    value={editFormData.material}
+                    onChange={(e) => setEditFormData({ ...editFormData, material: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-emerald-500 cursor-pointer"
+                  >
+                    {BADMINTON_MATERIALS.map((m) => (
+                      <option key={m} value={m}>
+                        {m}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-slate-300 font-bold uppercase mb-1">
+                  Kondisi & Kesiapan Fisik/Mental Peserta *
+                </label>
+                <textarea
+                  rows={2}
+                  value={editFormData.participantCondition}
+                  onChange={(e) => setEditFormData({ ...editFormData, participantCondition: e.target.value })}
+                  required
+                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-emerald-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-300 font-bold uppercase mb-1">
+                  Hal / Teknik Yang Sudah Baik *
+                </label>
+                <textarea
+                  rows={2}
+                  value={editFormData.goodPoints}
+                  onChange={(e) => setEditFormData({ ...editFormData, goodPoints: e.target.value })}
+                  required
+                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-emerald-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-300 font-bold uppercase mb-1">
+                  Kendala / Hambatan Yang Ditemukan *
+                </label>
+                <textarea
+                  rows={2}
+                  value={editFormData.obstacles}
+                  onChange={(e) => setEditFormData({ ...editFormData, obstacles: e.target.value })}
+                  required
+                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-emerald-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-300 font-bold uppercase mb-1">
+                  Rencana Tindak Lanjut *
+                </label>
+                <textarea
+                  rows={2}
+                  value={editFormData.followUp}
+                  onChange={(e) => setEditFormData({ ...editFormData, followUp: e.target.value })}
+                  required
+                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-emerald-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-300 font-bold uppercase mb-1">
+                  Catatan Tambahan Guru Pembina
+                </label>
+                <textarea
+                  rows={2}
+                  value={editFormData.teacherNotes}
+                  onChange={(e) => setEditFormData({ ...editFormData, teacherNotes: e.target.value })}
+                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-emerald-500"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setEditingNote(null)}
+                  className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-bold cursor-pointer"
+                >
+                  BATAL
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold shadow-lg shadow-emerald-500/20 cursor-pointer"
+                >
+                  SIMPAN PERUBAHAN CATATAN
                 </button>
               </div>
             </form>

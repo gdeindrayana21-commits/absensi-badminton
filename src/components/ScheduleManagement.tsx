@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { TrainingSchedule, BADMINTON_MATERIALS } from '../types';
-import { saveSchedules } from '../utils/storage';
+import { saveSchedules, updateSchedule } from '../utils/storage';
 import {
   CalendarDays,
   Plus,
@@ -13,7 +13,8 @@ import {
   CheckCircle,
   X,
   Sparkles,
-  ChevronRight
+  ChevronRight,
+  Edit2
 } from 'lucide-react';
 import { showToast } from './Toast';
 
@@ -27,6 +28,7 @@ export const ScheduleManagement: React.FC<ScheduleManagementProps> = ({
   onNavigateToAttendance
 }) => {
   const [isAddOpen, setIsAddOpen] = useState(false);
+  const [editingSchedule, setEditingSchedule] = useState<TrainingSchedule | null>(null);
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
 
   const [formData, setFormData] = useState<Omit<TrainingSchedule, 'id'>>({
@@ -40,6 +42,18 @@ export const ScheduleManagement: React.FC<ScheduleManagementProps> = ({
     status: 'Terjadwal'
   });
 
+  const [editFormData, setEditFormData] = useState<TrainingSchedule>({
+    id: '',
+    date: new Date().toISOString().split('T')[0],
+    day: 'Sabtu',
+    startTime: '07:30',
+    endTime: '09:00',
+    location: 'Lapangan Bulutangkis SMA Negeri 1 Tejakula',
+    material: BADMINTON_MATERIALS[0],
+    notes: '',
+    status: 'Terjadwal'
+  });
+
   const handleDateChange = (dateVal: string) => {
     try {
       const d = new Date(dateVal);
@@ -47,6 +61,34 @@ export const ScheduleManagement: React.FC<ScheduleManagementProps> = ({
       setFormData((prev) => ({ ...prev, date: dateVal, day: dayName }));
     } catch {
       setFormData((prev) => ({ ...prev, date: dateVal }));
+    }
+  };
+
+  const handleEditDateChange = (dateVal: string) => {
+    try {
+      const d = new Date(dateVal);
+      const dayName = new Intl.DateTimeFormat('id-ID', { weekday: 'long' }).format(d);
+      setEditFormData((prev) => ({ ...prev, date: dateVal, day: dayName }));
+    } catch {
+      setEditFormData((prev) => ({ ...prev, date: dateVal }));
+    }
+  };
+
+  const handleOpenEdit = (sch: TrainingSchedule) => {
+    setEditingSchedule(sch);
+    setEditFormData({ ...sch });
+  };
+
+  const handleSaveEditSchedule = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingSchedule) return;
+
+    const res = updateSchedule(editingSchedule.id, editFormData);
+    if (res.success) {
+      showToast(res.message, 'success');
+      setEditingSchedule(null);
+    } else {
+      showToast(res.message, 'error');
     }
   };
 
@@ -157,6 +199,13 @@ export const ScheduleManagement: React.FC<ScheduleManagementProps> = ({
                   </span>
                   <div className="flex items-center gap-1">
                     <button
+                      onClick={() => handleOpenEdit(sch)}
+                      className="p-1 rounded-lg bg-slate-800 hover:bg-emerald-950 text-slate-400 hover:text-emerald-400 transition-colors"
+                      title="Edit Tanggal & Rincian Jadwal"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                    <button
                       onClick={() => handleToggleStatus(sch.id)}
                       className="p-1 rounded-lg bg-slate-800 hover:bg-emerald-950 text-slate-400 hover:text-emerald-400 transition-colors"
                       title="Ubah Status (Selesai/Terjadwal)"
@@ -247,12 +296,21 @@ export const ScheduleManagement: React.FC<ScheduleManagementProps> = ({
                   </div>
                   <p className="text-xs text-slate-400 mt-0.5">{sch.location}</p>
                 </div>
-                <button
-                  onClick={() => onNavigateToAttendance(sch.date)}
-                  className="px-3 py-1.5 rounded-xl bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500 hover:text-slate-950 text-xs font-bold border border-emerald-500/30 transition-all"
-                >
-                  Absen
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handleOpenEdit(sch)}
+                    className="p-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors cursor-pointer"
+                    title="Edit Tanggal & Jadwal"
+                  >
+                    <Edit2 className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => onNavigateToAttendance(sch.date)}
+                    className="px-3 py-1.5 rounded-xl bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500 hover:text-slate-950 text-xs font-bold border border-emerald-500/30 transition-all cursor-pointer"
+                  >
+                    Absen
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -369,6 +427,144 @@ export const ScheduleManagement: React.FC<ScheduleManagementProps> = ({
                   className="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold shadow-lg shadow-emerald-500/20 cursor-pointer"
                 >
                   SIMPAN JADWAL
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Schedule Modal */}
+      {editingSchedule && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="relative w-full max-w-lg bg-slate-900 border border-emerald-500/40 rounded-3xl p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                  <CalendarDays className="w-4 h-4" />
+                </div>
+                <h3 className="text-base sm:text-lg font-bold text-white font-heading uppercase">
+                  EDIT JADWAL & TANGGAL PELAKSANAAN
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditingSchedule(null)}
+                className="text-slate-400 hover:text-white cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEditSchedule} className="space-y-4 text-xs">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-300 font-bold uppercase mb-1">Tanggal Pelaksanaan *</label>
+                  <input
+                    type="date"
+                    value={editFormData.date}
+                    onChange={(e) => handleEditDateChange(e.target.value)}
+                    required
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white font-mono focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-300 font-bold uppercase mb-1">Hari Pelaksanaan</label>
+                  <input
+                    type="text"
+                    value={editFormData.day}
+                    readOnly
+                    className="w-full px-3 py-2 bg-slate-950/60 border border-slate-800 rounded-xl text-emerald-400 font-bold"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-300 font-bold uppercase mb-1">Jam Mulai</label>
+                  <input
+                    type="time"
+                    value={editFormData.startTime}
+                    onChange={(e) => setEditFormData({ ...editFormData, startTime: e.target.value })}
+                    required
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white font-mono focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-300 font-bold uppercase mb-1">Jam Selesai</label>
+                  <input
+                    type="time"
+                    value={editFormData.endTime}
+                    onChange={(e) => setEditFormData({ ...editFormData, endTime: e.target.value })}
+                    required
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white font-mono focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-300 font-bold uppercase mb-1">Tempat / Lokasi *</label>
+                  <input
+                    type="text"
+                    value={editFormData.location}
+                    onChange={(e) => setEditFormData({ ...editFormData, location: e.target.value })}
+                    required
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-300 font-bold uppercase mb-1">Status Jadwal</label>
+                  <select
+                    value={editFormData.status || 'Terjadwal'}
+                    onChange={(e) => setEditFormData({ ...editFormData, status: e.target.value as any })}
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-emerald-500 cursor-pointer"
+                  >
+                    <option value="Terjadwal">Terjadwal</option>
+                    <option value="Selesai">Selesai</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-slate-300 font-bold uppercase mb-1">Materi / Jenis Latihan *</label>
+                <select
+                  value={editFormData.material}
+                  onChange={(e) => setEditFormData({ ...editFormData, material: e.target.value })}
+                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-emerald-500 cursor-pointer"
+                >
+                  {BADMINTON_MATERIALS.map((m) => (
+                    <option key={m} value={m}>
+                      {m}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-slate-300 font-bold uppercase mb-1">Keterangan / Catatan</label>
+                <textarea
+                  rows={2}
+                  value={editFormData.notes}
+                  onChange={(e) => setEditFormData({ ...editFormData, notes: e.target.value })}
+                  placeholder="Catatan tambahan untuk peserta atau persiapan alat..."
+                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-emerald-500"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setEditingSchedule(null)}
+                  className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-bold cursor-pointer"
+                >
+                  BATAL
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold shadow-lg shadow-emerald-500/20 cursor-pointer"
+                >
+                  SIMPAN PERUBAHAN JADWAL
                 </button>
               </div>
             </form>
