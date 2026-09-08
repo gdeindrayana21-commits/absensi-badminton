@@ -272,7 +272,6 @@ export const AttendanceHistory: React.FC<AttendanceHistoryProps> = ({
                           <th className="py-2.5 px-3 text-center w-12">No</th>
                           <th className="py-2.5 px-3">Nama Siswa</th>
                           <th className="py-2.5 px-3 text-center">Kelas</th>
-                          <th className="py-2.5 px-3 text-center">Absen</th>
                           <th className="py-2.5 px-4 text-center">Status Kehadiran</th>
                         </tr>
                       </thead>
@@ -287,9 +286,6 @@ export const AttendanceHistory: React.FC<AttendanceHistoryProps> = ({
                             </td>
                             <td className="py-2 px-3 text-center text-emerald-400">
                               {rec.studentGrade}
-                            </td>
-                            <td className="py-2 px-3 text-center font-mono text-slate-300">
-                              {rec.studentAbsenNo}
                             </td>
                             <td className="py-2 px-4 text-center">
                               <div className="inline-flex items-center gap-1 p-0.5 rounded-xl bg-slate-900 border border-slate-800">

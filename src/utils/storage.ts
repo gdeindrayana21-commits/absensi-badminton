@@ -22,34 +22,34 @@ const STORAGE_KEYS = {
 
 // Initial Realistic Seed Data for SMA Negeri 1 Tejakula
 const INITIAL_STUDENTS: Student[] = [
-  { id: 'std-001', name: 'I Kadek Arya Wiratama', grade: 'X.1', absenNo: 1, status: 'Aktif', gender: 'L', phone: '081234567890', joinedAt: '2026-07-15' },
-  { id: 'std-002', name: 'Ni Putu Ayu Saraswati', grade: 'X.1', absenNo: 14, status: 'Aktif', gender: 'P', phone: '081234567891', joinedAt: '2026-07-15' },
-  { id: 'std-003', name: 'I Made Dwi Pranata', grade: 'X.2', absenNo: 5, status: 'Aktif', gender: 'L', phone: '081234567892', joinedAt: '2026-07-16' },
-  { id: 'std-004', name: 'I Gede Bayu Mahendra', grade: 'X.3', absenNo: 8, status: 'Aktif', gender: 'L', phone: '081234567893', joinedAt: '2026-07-16' },
-  { id: 'std-005', name: 'Ni Made Citra Dewi', grade: 'X.4', absenNo: 19, status: 'Aktif', gender: 'P', phone: '081234567894', joinedAt: '2026-07-17' },
-  { id: 'std-006', name: 'I Wayan Danu Tirta', grade: 'X.5', absenNo: 11, status: 'Aktif', gender: 'L', phone: '081234567895', joinedAt: '2026-07-18' },
-  { id: 'std-007', name: 'I Nyoman Eka Putra', grade: 'X.6', absenNo: 22, status: 'Aktif', gender: 'L', phone: '081234567896', joinedAt: '2026-07-18' },
-  { id: 'std-008', name: 'Ni Komang Febriyanti', grade: 'X.7', absenNo: 7, status: 'Aktif', gender: 'P', phone: '081234567897', joinedAt: '2026-07-19' },
-  { id: 'std-009', name: 'I Ketut Gilang Raditya', grade: 'X.8', absenNo: 3, status: 'Aktif', gender: 'L', phone: '081234567898', joinedAt: '2026-07-20' },
-  { id: 'std-010', name: 'I Komang Hendra Suputra', grade: 'XI. 1', absenNo: 9, status: 'Aktif', gender: 'L', phone: '081234567899', joinedAt: '2025-07-15' },
-  { id: 'std-011', name: 'Ni Luh Indah Permata', grade: 'XI. 2', absenNo: 12, status: 'Aktif', gender: 'P', phone: '081234567801', joinedAt: '2025-07-15' },
-  { id: 'std-012', name: 'I Kadek Joni Artha', grade: 'XI. 3', absenNo: 4, status: 'Aktif', gender: 'L', phone: '081234567802', joinedAt: '2025-07-16' },
-  { id: 'std-013', name: 'I Putu Krisna Aditya', grade: 'XI. 4', absenNo: 16, status: 'Aktif', gender: 'L', phone: '081234567803', joinedAt: '2025-07-17' },
-  { id: 'std-014', name: 'Ni Kadek Lestari Dewi', grade: 'XI. 5', absenNo: 20, status: 'Aktif', gender: 'P', phone: '081234567804', joinedAt: '2025-07-18' },
-  { id: 'std-015', name: 'I Gede Mangku Putra', grade: 'XI. 6', absenNo: 2, status: 'Aktif', gender: 'L', phone: '081234567805', joinedAt: '2025-07-19' },
-  { id: 'std-016', name: 'I Wayan Nanda Satria', grade: 'XI. 7', absenNo: 15, status: 'Aktif', gender: 'L', phone: '081234567806', joinedAt: '2025-07-20' },
-  { id: 'std-017', name: 'Ni Wayan Oktaviani', grade: 'XI. 8', absenNo: 25, status: 'Aktif', gender: 'P', phone: '081234567807', joinedAt: '2025-07-21' },
-  { id: 'std-018', name: 'I Ketut Pandu Wiguna', grade: 'XI. 9', absenNo: 6, status: 'Aktif', gender: 'L', phone: '081234567808', joinedAt: '2025-07-22' },
-  { id: 'std-019', name: 'I Made Rama Wijaya', grade: 'XII. 1', absenNo: 1, status: 'Aktif', gender: 'L', phone: '081234567809', joinedAt: '2024-07-15' },
-  { id: 'std-020', name: 'Ni Made Sintya Maharani', grade: 'XII. 2', absenNo: 18, status: 'Aktif', gender: 'P', phone: '081234567810', joinedAt: '2024-07-15' },
-  { id: 'std-021', name: 'I Putu Teguh Santoso', grade: 'XII. 3', absenNo: 28, status: 'Aktif', gender: 'L', phone: '081234567811', joinedAt: '2024-07-16' },
-  { id: 'std-022', name: 'Ni Komang Utami Putri', grade: 'XII. 4', absenNo: 10, status: 'Aktif', gender: 'P', phone: '081234567812', joinedAt: '2024-07-17' },
-  { id: 'std-023', name: 'I Kadek Yoga Pratama', grade: 'XII. 5', absenNo: 13, status: 'Aktif', gender: 'L', phone: '081234567813', joinedAt: '2024-07-18' },
-  { id: 'std-024', name: 'I Nyoman Zaki Aditya', grade: 'XII. 6', absenNo: 21, status: 'Aktif', gender: 'L', phone: '081234567814', joinedAt: '2024-07-19' },
-  { id: 'std-025', name: 'Ni Luh Ayu Wardani', grade: 'XII. 7', absenNo: 5, status: 'Aktif', gender: 'P', phone: '081234567815', joinedAt: '2024-07-20' },
-  { id: 'std-026', name: 'I Gede Dimas Wardana', grade: 'X.1', absenNo: 2, status: 'Aktif', gender: 'L', phone: '081234567816', joinedAt: '2026-07-21' },
-  { id: 'std-027', name: 'Ni Putu Gita Savitri', grade: 'X.2', absenNo: 15, status: 'Aktif', gender: 'P', phone: '081234567817', joinedAt: '2026-07-22' },
-  { id: 'std-028', name: 'I Wayan Ilham Pratama', grade: 'XI. 1', absenNo: 30, status: 'Aktif', gender: 'L', phone: '081234567818', joinedAt: '2025-07-23' }
+  { id: 'std-001', name: 'I Kadek Arya Wiratama', grade: 'X.1', status: 'Aktif', gender: 'L', phone: '081234567890', joinedAt: '2026-07-15' },
+  { id: 'std-002', name: 'Ni Putu Ayu Saraswati', grade: 'X.1', status: 'Aktif', gender: 'P', phone: '081234567891', joinedAt: '2026-07-15' },
+  { id: 'std-003', name: 'I Made Dwi Pranata', grade: 'X.2', status: 'Aktif', gender: 'L', phone: '081234567892', joinedAt: '2026-07-16' },
+  { id: 'std-004', name: 'I Gede Bayu Mahendra', grade: 'X.3', status: 'Aktif', gender: 'L', phone: '081234567893', joinedAt: '2026-07-16' },
+  { id: 'std-005', name: 'Ni Made Citra Dewi', grade: 'X.4', status: 'Aktif', gender: 'P', phone: '081234567894', joinedAt: '2026-07-17' },
+  { id: 'std-006', name: 'I Wayan Danu Tirta', grade: 'X.5', status: 'Aktif', gender: 'L', phone: '081234567895', joinedAt: '2026-07-18' },
+  { id: 'std-007', name: 'I Nyoman Eka Putra', grade: 'X.6', status: 'Aktif', gender: 'L', phone: '081234567896', joinedAt: '2026-07-18' },
+  { id: 'std-008', name: 'Ni Komang Febriyanti', grade: 'X.7', status: 'Aktif', gender: 'P', phone: '081234567897', joinedAt: '2026-07-19' },
+  { id: 'std-009', name: 'I Ketut Gilang Raditya', grade: 'X.8', status: 'Aktif', gender: 'L', phone: '081234567898', joinedAt: '2026-07-20' },
+  { id: 'std-010', name: 'I Komang Hendra Suputra', grade: 'XI. 1', status: 'Aktif', gender: 'L', phone: '081234567899', joinedAt: '2025-07-15' },
+  { id: 'std-011', name: 'Ni Luh Indah Permata', grade: 'XI. 2', status: 'Aktif', gender: 'P', phone: '081234567801', joinedAt: '2025-07-15' },
+  { id: 'std-012', name: 'I Kadek Joni Artha', grade: 'XI. 3', status: 'Aktif', gender: 'L', phone: '081234567802', joinedAt: '2025-07-16' },
+  { id: 'std-013', name: 'I Putu Krisna Aditya', grade: 'XI. 4', status: 'Aktif', gender: 'L', phone: '081234567803', joinedAt: '2025-07-17' },
+  { id: 'std-014', name: 'Ni Kadek Lestari Dewi', grade: 'XI. 5', status: 'Aktif', gender: 'P', phone: '081234567804', joinedAt: '2025-07-18' },
+  { id: 'std-015', name: 'I Gede Mangku Putra', grade: 'XI. 6', status: 'Aktif', gender: 'L', phone: '081234567805', joinedAt: '2025-07-19' },
+  { id: 'std-016', name: 'I Wayan Nanda Satria', grade: 'XI. 7', status: 'Aktif', gender: 'L', phone: '081234567806', joinedAt: '2025-07-20' },
+  { id: 'std-017', name: 'Ni Wayan Oktaviani', grade: 'XI. 8', status: 'Aktif', gender: 'P', phone: '081234567807', joinedAt: '2025-07-21' },
+  { id: 'std-018', name: 'I Ketut Pandu Wiguna', grade: 'XI. 9', status: 'Aktif', gender: 'L', phone: '081234567808', joinedAt: '2025-07-22' },
+  { id: 'std-019', name: 'I Made Rama Wijaya', grade: 'XII. 1', status: 'Aktif', gender: 'L', phone: '081234567809', joinedAt: '2024-07-15' },
+  { id: 'std-020', name: 'Ni Made Sintya Maharani', grade: 'XII. 2', status: 'Aktif', gender: 'P', phone: '081234567810', joinedAt: '2024-07-15' },
+  { id: 'std-021', name: 'I Putu Teguh Santoso', grade: 'XII. 3', status: 'Aktif', gender: 'L', phone: '081234567811', joinedAt: '2024-07-16' },
+  { id: 'std-022', name: 'Ni Komang Utami Putri', grade: 'XII. 4', status: 'Aktif', gender: 'P', phone: '081234567812', joinedAt: '2024-07-17' },
+  { id: 'std-023', name: 'I Kadek Yoga Pratama', grade: 'XII. 5', status: 'Aktif', gender: 'L', phone: '081234567813', joinedAt: '2024-07-18' },
+  { id: 'std-024', name: 'I Nyoman Zaki Aditya', grade: 'XII. 6', status: 'Aktif', gender: 'L', phone: '081234567814', joinedAt: '2024-07-19' },
+  { id: 'std-025', name: 'Ni Luh Ayu Wardani', grade: 'XII. 7', status: 'Aktif', gender: 'P', phone: '081234567815', joinedAt: '2024-07-20' },
+  { id: 'std-026', name: 'I Gede Dimas Wardana', grade: 'X.1', status: 'Aktif', gender: 'L', phone: '081234567816', joinedAt: '2026-07-21' },
+  { id: 'std-027', name: 'Ni Putu Gita Savitri', grade: 'X.2', status: 'Aktif', gender: 'P', phone: '081234567817', joinedAt: '2026-07-22' },
+  { id: 'std-028', name: 'I Wayan Ilham Pratama', grade: 'XI. 1', status: 'Aktif', gender: 'L', phone: '081234567818', joinedAt: '2025-07-23' }
 ];
 
 const INITIAL_SCHEDULES: TrainingSchedule[] = [
@@ -119,9 +119,7 @@ const INITIAL_ATTENDANCE: AttendanceRecord[] = [
     studentId: std.id,
     studentName: std.name,
     grade: std.grade,
-    absenNo: std.absenNo,
     studentGrade: std.grade,
-    studentAbsenNo: std.absenNo,
     status: (idx === 7 ? 'Ijin' : idx === 18 ? 'Alpa' : 'Hadir') as AttendanceStatus,
     startTime: '07:30',
     endTime: '09:00',
@@ -139,9 +137,7 @@ const INITIAL_ATTENDANCE: AttendanceRecord[] = [
     studentId: std.id,
     studentName: std.name,
     grade: std.grade,
-    absenNo: std.absenNo,
     studentGrade: std.grade,
-    studentAbsenNo: std.absenNo,
     status: (idx === 4 ? 'Ijin' : idx === 18 ? 'Alpa' : idx === 23 ? 'Alpa' : 'Hadir') as AttendanceStatus,
     startTime: '07:30',
     endTime: '09:00',
@@ -159,9 +155,7 @@ const INITIAL_ATTENDANCE: AttendanceRecord[] = [
     studentId: std.id,
     studentName: std.name,
     grade: std.grade,
-    absenNo: std.absenNo,
     studentGrade: std.grade,
-    studentAbsenNo: std.absenNo,
     status: (idx === 18 ? 'Alpa' : idx === 2 ? 'Ijin' : idx === 23 ? 'Alpa' : 'Hadir') as AttendanceStatus,
     startTime: '07:30',
     endTime: '09:00',
@@ -323,7 +317,13 @@ export const getStudents = (): Student[] => {
       return INITIAL_STUDENTS;
     }
     const parsed = JSON.parse(data);
-    return Array.isArray(parsed) ? parsed : INITIAL_STUDENTS;
+    if (Array.isArray(parsed)) {
+      return parsed.map((s: any) => {
+        const { absenNo, ...rest } = s;
+        return rest as Student;
+      });
+    }
+    return INITIAL_STUDENTS;
   } catch (e) {
     console.error('Error reading students:', e);
     return INITIAL_STUDENTS;
@@ -343,7 +343,13 @@ export const getAttendanceRecords = (): AttendanceRecord[] => {
       return INITIAL_ATTENDANCE;
     }
     const parsed = JSON.parse(data);
-    return Array.isArray(parsed) ? parsed : INITIAL_ATTENDANCE;
+    if (Array.isArray(parsed)) {
+      return parsed.map((a: any) => {
+        const { absenNo, studentAbsenNo, ...rest } = a;
+        return rest as AttendanceRecord;
+      });
+    }
+    return INITIAL_ATTENDANCE;
   } catch (e) {
     console.error('Error reading attendance:', e);
     return INITIAL_ATTENDANCE;
@@ -530,7 +536,6 @@ export const setStudentAttendance = (
       status,
       day,
       studentGrade: student.grade,
-      studentAbsenNo: student.absenNo,
       startTime: startTime || records[index].startTime,
       endTime: endTime || records[index].endTime,
       material: material || records[index].material,
@@ -546,9 +551,7 @@ export const setStudentAttendance = (
       studentId: student.id,
       studentName: student.name,
       grade: student.grade,
-      absenNo: student.absenNo,
       studentGrade: student.grade,
-      studentAbsenNo: student.absenNo,
       status,
       startTime: startTime || '07:30',
       endTime: endTime || '09:00',
@@ -597,7 +600,6 @@ export const saveBulkAttendance = (
         status,
         day,
         studentGrade: student.grade,
-        studentAbsenNo: student.absenNo,
         startTime: startTime || records[index].startTime || '07:30',
         endTime: endTime || records[index].endTime || '09:00',
         material: material || records[index].material || 'Latihan Rutin Bulutangkis',
@@ -612,9 +614,7 @@ export const saveBulkAttendance = (
         studentId: student.id,
         studentName: student.name,
         grade: student.grade,
-        absenNo: student.absenNo,
         studentGrade: student.grade,
-        studentAbsenNo: student.absenNo,
         status,
         startTime: startTime || '07:30',
         endTime: endTime || '09:00',
@@ -676,7 +676,6 @@ export const calculateAttendanceSummaries = (filterGrade?: string): AttendanceSu
         studentId: student.id,
         name: student.name,
         grade: student.grade,
-        absenNo: student.absenNo,
         status: student.status,
         hadir,
         ijin,

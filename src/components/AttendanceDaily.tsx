@@ -384,7 +384,7 @@ export const AttendanceDaily: React.FC<AttendanceDailyProps> = ({
                     <div>
                       <h4 className="font-bold text-white text-sm leading-tight">{student.name}</h4>
                       <p className="text-[11px] text-slate-400">
-                        Kelas <span className="text-emerald-400 font-semibold">{student.grade}</span> • No. Absen <span className="text-slate-300 font-mono">{student.absenNo}</span>
+                        Kelas <span className="text-emerald-400 font-semibold">{student.grade}</span>
                       </p>
                     </div>
                   </div>
@@ -461,7 +461,6 @@ export const AttendanceDaily: React.FC<AttendanceDailyProps> = ({
                 <th className="py-3.5 px-4 text-center w-12">No</th>
                 <th className="py-3.5 px-4">Nama Peserta</th>
                 <th className="py-3.5 px-4 text-center">Kelas</th>
-                <th className="py-3.5 px-4 text-center">Absen</th>
                 <th className="py-3.5 px-6 text-center">Status Kehadiran</th>
               </tr>
             </thead>
@@ -491,9 +490,6 @@ export const AttendanceDaily: React.FC<AttendanceDailyProps> = ({
                       <span className="px-2 py-0.5 rounded bg-slate-900 border border-slate-700 text-emerald-300 font-medium">
                         {student.grade}
                       </span>
-                    </td>
-                    <td className="py-3.5 px-4 text-center font-mono text-slate-300">
-                      {student.absenNo}
                     </td>
                     <td className="py-3.5 px-6 text-center">
                       {/* Big 3-Status Buttons (Section 8) */}

@@ -75,8 +75,8 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
 
       doc.setFont('helvetica', 'normal');
       doc.text(`Nama Lengkap   : ${student.name}`, 15, 50);
-      doc.text(`Kelas / Absen    : ${student.grade} / No. ${student.absenNo}`, 15, 56);
-      doc.text(`Status Peserta   : ${student.status}`, 15, 62);
+      doc.text(`Kelas          : ${student.grade}`, 15, 56);
+      doc.text(`Status Peserta : ${student.status}`, 15, 62);
       doc.text(`Total Kehadiran : ${countHadir} Hadir, ${countIjin} Ijin, ${countAlpa} Alpa (${percentage}%)`, 15, 68);
 
       const tableData = studentRecords.map((r, i) => [
@@ -137,7 +137,7 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
                 </span>
               </div>
               <p className="text-xs text-slate-400 mt-0.5 sm:mt-1">
-                Kelas <strong className="text-emerald-400">{student.grade}</strong> • No. Absen <strong className="text-white">{student.absenNo}</strong> • JK: <strong className="text-cyan-400">{student.gender || 'L'}</strong>
+                Kelas <strong className="text-emerald-400">{student.grade}</strong> • JK: <strong className="text-cyan-400">{student.gender || 'L'}</strong>
               </p>
             </div>
           </div>

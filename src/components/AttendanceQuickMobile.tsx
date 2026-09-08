@@ -121,8 +121,7 @@ export const AttendanceQuickMobile: React.FC<AttendanceQuickMobileProps> = ({
   const filtered = students.filter((s) => {
     const matchSearch =
       s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      s.grade.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      s.absenNo.toString().includes(searchTerm);
+      s.grade.toLowerCase().includes(searchTerm.toLowerCase());
     const matchGrade = !selectedGrade || s.grade === selectedGrade;
     return matchSearch && matchGrade;
   });
@@ -246,7 +245,7 @@ export const AttendanceQuickMobile: React.FC<AttendanceQuickMobileProps> = ({
                     {student.name}
                   </h4>
                   <p className="text-xs text-slate-400 font-medium">
-                    <span className="text-emerald-400 font-bold">{student.grade}</span> — Absen {student.absenNo}
+                    <span className="text-emerald-400 font-bold">{student.grade}</span>
                   </p>
                 </div>
                 <span

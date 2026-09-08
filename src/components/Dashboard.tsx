@@ -589,7 +589,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                           {item.name}
                         </p>
                         <p className="text-[11px] text-slate-400">
-                          {item.grade} • Absen {item.absenNo}
+                          Kelas {item.grade}
                         </p>
                       </div>
                     </div>

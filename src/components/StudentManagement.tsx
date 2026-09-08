@@ -60,14 +60,12 @@ export const StudentManagement: React.FC<StudentManagementProps> = ({
     id?: string;
     name: string;
     grade: string;
-    absenNo: number;
     status: 'Aktif' | 'Tidak Aktif';
     gender?: 'L' | 'P';
     phone?: string;
   }>({
     name: '',
     grade: 'X.1',
-    absenNo: 1,
     status: 'Aktif',
     gender: 'L',
     phone: ''
@@ -76,7 +74,7 @@ export const StudentManagement: React.FC<StudentManagementProps> = ({
   const [studentToDelete, setStudentToDelete] = useState<Student | null>(null);
 
   // Excel Import States
-  const [importedRows, setImportedRows] = useState<Array<{ name: string; grade: string; absenNo: number; isDuplicate: boolean }>>([]);
+  const [importedRows, setImportedRows] = useState<Array<{ name: string; grade: string; isDuplicate: boolean }>>([]);
   const [importFileName, setImportFileName] = useState('');
 
   // Filtered Students
@@ -84,8 +82,7 @@ export const StudentManagement: React.FC<StudentManagementProps> = ({
     return students.filter((s) => {
       const matchSearch =
         s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        s.grade.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        s.absenNo.toString().includes(searchTerm);
+        s.grade.toLowerCase().includes(searchTerm.toLowerCase());
       const matchGrade = !selectedGrade || s.grade === selectedGrade;
       const matchStatus = !selectedStatus || s.status === selectedStatus;
       return matchSearch && matchGrade && matchStatus;
@@ -97,7 +94,6 @@ export const StudentManagement: React.FC<StudentManagementProps> = ({
     setFormData({
       name: '',
       grade: 'X.1',
-      absenNo: 1,
       status: 'Aktif',
       gender: 'L',
       phone: ''
@@ -111,7 +107,6 @@ export const StudentManagement: React.FC<StudentManagementProps> = ({
       id: student.id,
       name: student.name,
       grade: student.grade,
-      absenNo: student.absenNo,
       status: student.status,
       gender: student.gender || 'L',
       phone: student.phone || ''
@@ -136,7 +131,6 @@ export const StudentManagement: React.FC<StudentManagementProps> = ({
     const res = addStudent({
       name: formData.name.trim(),
       grade: formData.grade,
-      absenNo: Number(formData.absenNo),
       status: formData.status,
       gender: formData.gender,
       phone: formData.phone
@@ -158,7 +152,6 @@ export const StudentManagement: React.FC<StudentManagementProps> = ({
     const res = updateStudent(formData.id, {
       name: formData.name.trim(),
       grade: formData.grade,
-      absenNo: Number(formData.absenNo),
       status: formData.status,
       gender: formData.gender,
       phone: formData.phone
@@ -220,7 +213,6 @@ export const StudentManagement: React.FC<StudentManagementProps> = ({
         const parsed = rawData.map((row) => {
           const name = row['Nama Peserta'] || row['Nama'] || row['nama'] || row['NAMA'] || '';
           const grade = row['Kelas'] || row['kelas'] || row['KELAS'] || 'X.1';
-          const absenNo = Number(row['No Absen'] || row['Absen'] || row['no_absen'] || 1);
 
           // Duplicate check against current students list
           const isDuplicate = students.some(
@@ -230,7 +222,6 @@ export const StudentManagement: React.FC<StudentManagementProps> = ({
           return {
             name: String(name).trim(),
             grade: String(grade).trim(),
-            absenNo: isNaN(absenNo) ? 1 : absenNo,
             isDuplicate
           };
         }).filter((r) => r.name.length > 0);
@@ -253,7 +244,6 @@ export const StudentManagement: React.FC<StudentManagementProps> = ({
         const res = addStudent({
           name: row.name,
           grade: row.grade,
-          absenNo: row.absenNo,
           status: 'Aktif'
         });
         if (res.success) addedCount++;
@@ -339,7 +329,7 @@ export const StudentManagement: React.FC<StudentManagementProps> = ({
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="🔎 Cari nama, kelas, no absen..."
+            placeholder="🔎 Cari nama atau kelas peserta..."
             className="w-full pl-10 pr-4 py-2.5 bg-slate-900/90 border border-slate-800 rounded-2xl text-white text-xs sm:text-sm focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all placeholder:text-slate-500"
           />
           {searchTerm && (
@@ -402,7 +392,7 @@ export const StudentManagement: React.FC<StudentManagementProps> = ({
                       <Eye className="w-3.5 h-3.5 text-emerald-400" />
                     </button>
                     <p className="text-[11px] text-slate-400 mt-0.5">
-                      Kelas <span className="text-emerald-400 font-semibold">{student.grade}</span> • No. Absen <span className="text-slate-300 font-mono">{student.absenNo}</span> • JK: <span className="text-cyan-400">{student.gender || 'L'}</span>
+                      Kelas <span className="text-emerald-400 font-semibold">{student.grade}</span> • JK: <span className="text-cyan-400">{student.gender || 'L'}</span>
                     </p>
                   </div>
                 </div>
@@ -463,7 +453,6 @@ export const StudentManagement: React.FC<StudentManagementProps> = ({
                 <th className="py-3.5 px-4 text-center w-12">No</th>
                 <th className="py-3.5 px-4">Nama Peserta</th>
                 <th className="py-3.5 px-4 text-center">Kelas</th>
-                <th className="py-3.5 px-4 text-center">No Absen</th>
                 <th className="py-3.5 px-4 text-center">JK</th>
                 <th className="py-3.5 px-4 text-center">Status</th>
                 <th className="py-3.5 px-4 text-center">Aksi</th>
@@ -493,9 +482,6 @@ export const StudentManagement: React.FC<StudentManagementProps> = ({
                       <span className="px-2 py-0.5 rounded bg-slate-900 border border-slate-700">
                         {student.grade}
                       </span>
-                    </td>
-                    <td className="py-3 px-4 text-center font-mono text-slate-300">
-                      {student.absenNo}
                     </td>
                     <td className="py-3 px-4 text-center">
                       <span
@@ -546,7 +532,7 @@ export const StudentManagement: React.FC<StudentManagementProps> = ({
                 ))
               ) : (
                 <tr>
-                  <td colSpan={7} className="py-8 text-center text-slate-400">
+                  <td colSpan={6} className="py-8 text-center text-slate-400">
                     Tidak ada data peserta yang cocok dengan pencarian.
                   </td>
                 </tr>
@@ -588,7 +574,7 @@ export const StudentManagement: React.FC<StudentManagementProps> = ({
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-slate-300 uppercase mb-1">
                     Kelas *
@@ -606,23 +592,6 @@ export const StudentManagement: React.FC<StudentManagementProps> = ({
                   </select>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-bold text-slate-300 uppercase mb-1">
-                    No Absen *
-                  </label>
-                  <input
-                    type="number"
-                    min="1"
-                    max="50"
-                    value={formData.absenNo}
-                    onChange={(e) => setFormData({ ...formData, absenNo: Number(e.target.value) })}
-                    required
-                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-emerald-500"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-slate-300 uppercase mb-1">
                     Jenis Kelamin
@@ -703,7 +672,7 @@ export const StudentManagement: React.FC<StudentManagementProps> = ({
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-slate-300 uppercase mb-1">
                     Kelas *
@@ -721,23 +690,6 @@ export const StudentManagement: React.FC<StudentManagementProps> = ({
                   </select>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-bold text-slate-300 uppercase mb-1">
-                    No Absen *
-                  </label>
-                  <input
-                    type="number"
-                    min="1"
-                    max="50"
-                    value={formData.absenNo}
-                    onChange={(e) => setFormData({ ...formData, absenNo: Number(e.target.value) })}
-                    required
-                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-cyan-500"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-slate-300 uppercase mb-1">
                     Jenis Kelamin
@@ -913,7 +865,7 @@ export const StudentManagement: React.FC<StudentManagementProps> = ({
                   IMPORT DATA SISWA DARI EXCEL
                 </h3>
                 <p className="text-xs text-slate-400">
-                  Format Kolom: <strong>Nama Peserta | Kelas | No Absen</strong>
+                  Format Kolom: <strong>Nama Peserta | Kelas</strong>
                 </p>
               </div>
               <button
@@ -971,7 +923,6 @@ export const StudentManagement: React.FC<StudentManagementProps> = ({
                           <th className="py-2 px-3">No</th>
                           <th className="py-2 px-3">Nama Peserta</th>
                           <th className="py-2 px-3 text-center">Kelas</th>
-                          <th className="py-2 px-3 text-center">No Absen</th>
                           <th className="py-2 px-3 text-center">Status Validasi</th>
                         </tr>
                       </thead>
@@ -984,7 +935,6 @@ export const StudentManagement: React.FC<StudentManagementProps> = ({
                             <td className="py-1.5 px-3 font-mono">{i + 1}</td>
                             <td className="py-1.5 px-3 font-medium">{r.name}</td>
                             <td className="py-1.5 px-3 text-center">{r.grade}</td>
-                            <td className="py-1.5 px-3 text-center font-mono">{r.absenNo}</td>
                             <td className="py-1.5 px-3 text-center">
                               {r.isDuplicate ? (
                                 <span className="px-2 py-0.5 rounded bg-rose-900/60 text-rose-300 text-[10px] font-bold">

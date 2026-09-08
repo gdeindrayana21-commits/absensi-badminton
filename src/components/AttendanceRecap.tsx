@@ -113,8 +113,7 @@ export const AttendanceRecap: React.FC<AttendanceRecapProps> = ({
       .filter((row) => {
         const match =
           row.student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          row.student.grade.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          row.student.absenNo.toString().includes(searchTerm);
+          row.student.grade.toLowerCase().includes(searchTerm.toLowerCase());
         return match;
       });
   }, [students, filteredRecords, selectedGrade, searchTerm]);

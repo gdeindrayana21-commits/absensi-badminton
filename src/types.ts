@@ -5,7 +5,7 @@ export interface Student {
   id: string;
   name: string;
   grade: string; // e.g. 'X.1', 'XI.2', 'XII.3'
-  absenNo: number;
+  absenNo?: number;
   status: StudentStatus;
   gender?: 'L' | 'P';
   phone?: string;
@@ -19,7 +19,7 @@ export interface AttendanceRecord {
   studentId: string;
   studentName: string;
   grade: string;
-  absenNo: number;
+  absenNo?: number;
   studentGrade?: string;
   studentAbsenNo?: number;
   status: AttendanceStatus;
@@ -97,7 +97,7 @@ export interface AttendanceSummary {
   studentId: string;
   name: string;
   grade: string;
-  absenNo: number;
+  absenNo?: number;
   status: StudentStatus;
   hadir: number;
   ijin: number;

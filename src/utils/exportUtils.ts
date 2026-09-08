@@ -35,7 +35,6 @@ export const exportMasterDatabaseExcel = () => {
     'ID': s.id,
     'Nama Peserta': s.name,
     'Kelas': s.grade,
-    'No Absen': s.absenNo,
     'Status': s.status,
     'Jenis Kelamin': s.gender || 'L',
     'No Telepon/WA': s.phone || '-',
@@ -53,7 +52,6 @@ export const exportMasterDatabaseExcel = () => {
     'ID Peserta': a.studentId,
     'Nama Peserta': a.studentName,
     'Kelas': a.grade || a.studentGrade,
-    'No Absen': a.absenNo || a.studentAbsenNo,
     'Status': a.status,
     'Jam Mulai': a.startTime,
     'Jam Selesai': a.endTime,
@@ -99,7 +97,6 @@ export const exportMasterDatabaseExcel = () => {
     'No': idx + 1,
     'Nama Peserta': sm.name,
     'Kelas': sm.grade,
-    'No Absen': sm.absenNo,
     'Status Peserta': sm.status,
     'Hadir': sm.hadir,
     'Ijin': sm.ijin,
@@ -171,25 +168,23 @@ export const exportDailyAttendancePdf = (
     (i + 1).toString(),
     r.studentName,
     r.studentGrade || r.grade,
-    (r.studentAbsenNo || r.absenNo).toString(),
     r.status,
     r.notes || '-'
   ]);
 
   autoTable(doc, {
     startY: 68,
-    head: [['No', 'Nama Peserta', 'Kelas', 'Abs', 'Status', 'Catatan / Alasan']],
+    head: [['No', 'Nama Peserta', 'Kelas', 'Status Kehadiran', 'Catatan / Alasan']],
     body: tableData,
     theme: 'grid',
     headStyles: { fillColor: [5, 150, 105], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8.5 },
     bodyStyles: { fontSize: 8 },
     columnStyles: {
       0: { halign: 'center', cellWidth: 10 },
-      1: { cellWidth: 65 },
-      2: { halign: 'center', cellWidth: 20 },
-      3: { halign: 'center', cellWidth: 15 },
-      4: { halign: 'center', cellWidth: 25 },
-      5: { cellWidth: 45 }
+      1: { cellWidth: 70 },
+      2: { halign: 'center', cellWidth: 25 },
+      3: { halign: 'center', cellWidth: 30 },
+      4: { cellWidth: 45 }
     },
     margin: { left: 14, right: 14 }
   });
@@ -225,7 +220,6 @@ export const exportDailyAttendanceExcel = (
     'Hari': day,
     'Nama Peserta': r.studentName,
     'Kelas': r.studentGrade || r.grade,
-    'No Absen': r.studentAbsenNo || r.absenNo,
     'Status Kehadiran': r.status,
     'Materi': material,
     'Waktu': `${startTime} - ${endTime} WITA`,
@@ -248,7 +242,6 @@ export const exportAttendanceRecapExcel = (
     'No': i + 1,
     'Nama Peserta': r.student.name,
     'Kelas': r.student.grade,
-    'No Absen': r.student.absenNo,
     'Status Peserta': r.student.status,
     'Hadir': r.hadir,
     'Ijin': r.ijin,
@@ -312,7 +305,6 @@ export const exportAttendanceRecapPdf = (
     (i + 1).toString(),
     r.student.name,
     r.student.grade,
-    r.student.absenNo.toString(),
     r.hadir.toString(),
     r.ijin.toString(),
     r.alpa.toString(),
@@ -323,22 +315,21 @@ export const exportAttendanceRecapPdf = (
 
   autoTable(doc, {
     startY: 68,
-    head: [['No', 'Nama Peserta', 'Kelas', 'Abs', 'H', 'I', 'A', 'Tot', '% Hadir', 'Predikat']],
+    head: [['No', 'Nama Peserta', 'Kelas', 'H', 'I', 'A', 'Tot', '% Hadir', 'Predikat']],
     body: tableData,
     theme: 'grid',
     headStyles: { fillColor: [5, 150, 105], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8.5 },
     bodyStyles: { fontSize: 8 },
     columnStyles: {
       0: { halign: 'center', cellWidth: 8 },
-      1: { cellWidth: 55 },
-      2: { halign: 'center', cellWidth: 16 },
-      3: { halign: 'center', cellWidth: 12 },
+      1: { cellWidth: 62 },
+      2: { halign: 'center', cellWidth: 20 },
+      3: { halign: 'center', cellWidth: 10 },
       4: { halign: 'center', cellWidth: 10 },
       5: { halign: 'center', cellWidth: 10 },
-      6: { halign: 'center', cellWidth: 10 },
-      7: { halign: 'center', cellWidth: 12 },
-      8: { halign: 'center', cellWidth: 20 },
-      9: { halign: 'center', cellWidth: 35 }
+      6: { halign: 'center', cellWidth: 12 },
+      7: { halign: 'center', cellWidth: 20 },
+      8: { halign: 'center', cellWidth: 30 }
     },
     margin: { left: 14, right: 14 }
   });
@@ -375,10 +366,10 @@ export const exportAttendanceRecapPdf = (
 // 6. Download Template Excel for Student Import
 export const downloadStudentTemplateExcel = () => {
   const templateData = [
-    { 'Nama Peserta': 'I Gede Aditya Pratama', 'Kelas': 'X.1', 'No Absen': 1 },
-    { 'Nama Peserta': 'Ni Made Bintang Pradnya', 'Kelas': 'X.2', 'No Absen': 14 },
-    { 'Nama Peserta': 'I Komang Candra Wibawa', 'Kelas': 'XI. 1', 'No Absen': 8 },
-    { 'Nama Peserta': 'Ni Ketut Dian Lestari', 'Kelas': 'XII. 3', 'No Absen': 22 }
+    { 'Nama Peserta': 'I Gede Aditya Pratama', 'Kelas': 'X.1', 'Jenis Kelamin': 'L', 'No Telepon/WA': '081234567890' },
+    { 'Nama Peserta': 'Ni Made Bintang Pradnya', 'Kelas': 'X.2', 'Jenis Kelamin': 'P', 'No Telepon/WA': '081234567891' },
+    { 'Nama Peserta': 'I Komang Candra Wibawa', 'Kelas': 'XI. 1', 'Jenis Kelamin': 'L', 'No Telepon/WA': '081234567892' },
+    { 'Nama Peserta': 'Ni Ketut Dian Lestari', 'Kelas': 'XII. 3', 'Jenis Kelamin': 'P', 'No Telepon/WA': '081234567893' }
   ];
 
   const ws = XLSX.utils.json_to_sheet(templateData);
@@ -394,7 +385,6 @@ export const exportStudentListExcel = () => {
     'No': idx + 1,
     'Nama Lengkap': s.name,
     'Kelas': s.grade,
-    'No Absen': s.absenNo,
     'Status': s.status,
     'Jenis Kelamin': s.gender === 'P' ? 'Perempuan' : 'Laki-laki',
     'No Kontak/WA': s.phone || '-',
