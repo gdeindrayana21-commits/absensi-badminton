@@ -392,7 +392,7 @@ export const StudentManagement: React.FC<StudentManagementProps> = ({
                       <Eye className="w-3.5 h-3.5 text-emerald-400" />
                     </button>
                     <p className="text-[11px] text-slate-400 mt-0.5">
-                      Kelas <span className="text-emerald-400 font-semibold">{student.grade}</span> • JK: <span className="text-cyan-400">{student.gender || 'L'}</span>
+                      Kelas <span className="text-emerald-400 font-semibold">{student.grade}</span>
                     </p>
                   </div>
                 </div>
@@ -453,7 +453,6 @@ export const StudentManagement: React.FC<StudentManagementProps> = ({
                 <th className="py-3.5 px-4 text-center w-12">No</th>
                 <th className="py-3.5 px-4">Nama Peserta</th>
                 <th className="py-3.5 px-4 text-center">Kelas</th>
-                <th className="py-3.5 px-4 text-center">JK</th>
                 <th className="py-3.5 px-4 text-center">Status</th>
                 <th className="py-3.5 px-4 text-center">Aksi</th>
               </tr>
@@ -481,17 +480,6 @@ export const StudentManagement: React.FC<StudentManagementProps> = ({
                     <td className="py-3 px-4 text-center font-medium text-emerald-300">
                       <span className="px-2 py-0.5 rounded bg-slate-900 border border-slate-700">
                         {student.grade}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 text-center">
-                      <span
-                        className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
-                          student.gender === 'P'
-                            ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
-                            : 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
-                        }`}
-                      >
-                        {student.gender || 'L'}
                       </span>
                     </td>
                     <td className="py-3 px-4 text-center">
@@ -574,7 +562,7 @@ export const StudentManagement: React.FC<StudentManagementProps> = ({
                 />
               </div>
 
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-slate-300 uppercase mb-1">
                     Kelas *
@@ -589,20 +577,6 @@ export const StudentManagement: React.FC<StudentManagementProps> = ({
                         {c}
                       </option>
                     ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-slate-300 uppercase mb-1">
-                    Jenis Kelamin
-                  </label>
-                  <select
-                    value={formData.gender || 'L'}
-                    onChange={(e) => setFormData({ ...formData, gender: e.target.value as 'L' | 'P' })}
-                    className="w-full px-3 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-emerald-500"
-                  >
-                    <option value="L">Laki-laki</option>
-                    <option value="P">Perempuan</option>
                   </select>
                 </div>
 
@@ -672,7 +646,7 @@ export const StudentManagement: React.FC<StudentManagementProps> = ({
                 />
               </div>
 
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-slate-300 uppercase mb-1">
                     Kelas *
@@ -687,20 +661,6 @@ export const StudentManagement: React.FC<StudentManagementProps> = ({
                         {c}
                       </option>
                     ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-slate-300 uppercase mb-1">
-                    Jenis Kelamin
-                  </label>
-                  <select
-                    value={formData.gender || 'L'}
-                    onChange={(e) => setFormData({ ...formData, gender: e.target.value as 'L' | 'P' })}
-                    className="w-full px-3 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-cyan-500"
-                  >
-                    <option value="L">Laki-laki</option>
-                    <option value="P">Perempuan</option>
                   </select>
                 </div>
 

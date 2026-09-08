@@ -137,7 +137,7 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
                 </span>
               </div>
               <p className="text-xs text-slate-400 mt-0.5 sm:mt-1">
-                Kelas <strong className="text-emerald-400">{student.grade}</strong> • JK: <strong className="text-cyan-400">{student.gender || 'L'}</strong>
+                Kelas <strong className="text-emerald-400">{student.grade}</strong>
               </p>
             </div>
           </div>

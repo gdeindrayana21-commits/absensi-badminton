@@ -36,7 +36,6 @@ export const exportMasterDatabaseExcel = () => {
     'Nama Peserta': s.name,
     'Kelas': s.grade,
     'Status': s.status,
-    'Jenis Kelamin': s.gender || 'L',
     'No Telepon/WA': s.phone || '-',
     'Tanggal Terdaftar': s.joinedAt || '-',
     'Timestamp': new Date().toISOString()
@@ -386,7 +385,6 @@ export const exportStudentListExcel = () => {
     'Nama Lengkap': s.name,
     'Kelas': s.grade,
     'Status': s.status,
-    'Jenis Kelamin': s.gender === 'P' ? 'Perempuan' : 'Laki-laki',
     'No Kontak/WA': s.phone || '-',
     'Tanggal Masuk': s.joinedAt || '-'
   }));
