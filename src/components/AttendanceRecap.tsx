@@ -10,6 +10,7 @@ import {
   exportAttendanceRecapExcel,
   exportAttendanceRecapPdf
 } from '../utils/exportUtils';
+import { ExportPdfConfirmModal } from './ExportPdfConfirmModal';
 import {
   FileSpreadsheet,
   FileDown,
@@ -43,6 +44,7 @@ export const AttendanceRecap: React.FC<AttendanceRecapProps> = ({
   onSelectStudent
 }) => {
   const [filterType, setFilterType] = useState<'all' | 'month' | 'semester' | 'custom'>('all');
+  const [isPdfModalOpen, setIsPdfModalOpen] = useState<boolean>(false);
   const [selectedMonth, setSelectedMonth] = useState<string>(new Date().toISOString().substring(0, 7)); // YYYY-MM
   const [selectedSemester, setSelectedSemester] = useState<'ganjil' | 'genap'>('ganjil');
   const [startDate, setStartDate] = useState<string>('');
@@ -137,15 +139,19 @@ export const AttendanceRecap: React.FC<AttendanceRecapProps> = ({
     showToast('Rekap Excel berhasil diunduh! 📊', 'success');
   };
 
-  // Handle PDF Export
-  const handleExportPdf = () => {
+  // Handle PDF Export with Principal Confirmation Modal
+  const handleOpenPdfModal = () => {
+    setIsPdfModalOpen(true);
+  };
+
+  const handleConfirmPdfDownload = (customIdentity: SchoolIdentity) => {
     let periodText = 'Semua Periode';
     if (filterType === 'month') periodText = `Bulan ${selectedMonth}`;
     if (filterType === 'semester') periodText = `Semester ${selectedSemester === 'ganjil' ? 'Ganjil' : 'Genap'}`;
     if (filterType === 'custom') periodText = `${startDate || 'Awal'} s/d ${endDate || 'Akhir'}`;
 
-    exportAttendanceRecapPdf(recapData, identity, periodText);
-    showToast('Laporan PDF Resmi berhasil digenerate! 📄', 'success');
+    exportAttendanceRecapPdf(recapData, customIdentity, periodText);
+    showToast('Laporan PDF Resmi berhasil diunduh dengan pengesahan Kepala Sekolah! 📄', 'success');
   };
 
   return (
@@ -174,7 +180,7 @@ export const AttendanceRecap: React.FC<AttendanceRecapProps> = ({
           </button>
 
           <button
-            onClick={handleExportPdf}
+            onClick={handleOpenPdfModal}
             className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-emerald-500/20 transition-all cursor-pointer"
           >
             <FileDown className="w-4 h-4" />
@@ -424,6 +430,16 @@ export const AttendanceRecap: React.FC<AttendanceRecapProps> = ({
           </table>
         </div>
       </div>
+
+      {/* Modal Pengesahan Kepala Sekolah Sebelum Unduh PDF */}
+      <ExportPdfConfirmModal
+        isOpen={isPdfModalOpen}
+        onClose={() => setIsPdfModalOpen(false)}
+        identity={identity}
+        title="Pengesahan Kepala Sekolah (Cetak Rekap PDF)"
+        documentDescription="Laporan Rekapitulasi Presensi Ekstrakurikuler Bulutangkis"
+        onConfirmDownload={handleConfirmPdfDownload}
+      />
     </div>
   );
 };

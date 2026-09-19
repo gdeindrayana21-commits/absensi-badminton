@@ -17,6 +17,7 @@ import {
   ArrowRightLeft
 } from 'lucide-react';
 import { exportMasterDatabaseExcel, exportOfficialSchoolPDF } from '../utils/exportUtils';
+import { ExportPdfConfirmModal } from './ExportPdfConfirmModal';
 import { showToast } from './Toast';
 
 interface NavbarProps {
@@ -43,6 +44,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [time, setTime] = useState<string>('');
   const [dateStr, setDateStr] = useState<string>('');
   const [dayStr, setDayStr] = useState<string>('');
+  const [isPdfModalOpen, setIsPdfModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
     const updateDateTime = () => {
@@ -78,9 +80,13 @@ export const Navbar: React.FC<NavbarProps> = ({
     showToast(`File Excel ${name} berhasil diunduh!`, 'success');
   };
 
-  const handleQuickPDF = () => {
-    const name = exportOfficialSchoolPDF();
-    showToast(`Dokumen PDF ${name} berhasil dibuat!`, 'success');
+  const handleOpenQuickPDF = () => {
+    setIsPdfModalOpen(true);
+  };
+
+  const handleConfirmQuickPDF = (customIdentity: SchoolIdentity) => {
+    const name = exportOfficialSchoolPDF(undefined, customIdentity);
+    showToast(`Dokumen PDF ${name || 'Resmi'} berhasil diunduh dengan pengesahan Kepala Sekolah!`, 'success');
   };
 
   return (
@@ -150,8 +156,8 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span>Unduh Excel</span>
             </button>
             <button
-              onClick={handleQuickPDF}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-cyan-300 hover:bg-cyan-950/60 rounded-lg transition-colors"
+              onClick={handleOpenQuickPDF}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-cyan-300 hover:bg-cyan-950/60 rounded-lg transition-colors cursor-pointer"
               title="Download Laporan Resmi PDF"
             >
               <FileText className="w-3.5 h-3.5 text-cyan-400" />
@@ -222,7 +228,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Logout Button */}
           <button
             onClick={onLogout}
-            className="p-2 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-rose-500/40 text-slate-400 hover:text-rose-400 hover:bg-rose-950/30 transition-all"
+            className="p-2 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-rose-500/40 text-slate-400 hover:text-rose-400 hover:bg-rose-950/30 transition-all cursor-pointer"
             title="Keluar / Logout"
             aria-label="Logout"
           >
@@ -230,6 +236,16 @@ export const Navbar: React.FC<NavbarProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Modal Pengesahan Kepala Sekolah Sebelum Unduh PDF */}
+      <ExportPdfConfirmModal
+        isOpen={isPdfModalOpen}
+        onClose={() => setIsPdfModalOpen(false)}
+        identity={identity}
+        title="Pengesahan Kepala Sekolah (Cetak Dokumen PDF)"
+        documentDescription="Laporan Resmi Presensi Bulutangkis SMAN 1 Tejakula"
+        onConfirmDownload={handleConfirmQuickPDF}
+      />
     </header>
   );
 };

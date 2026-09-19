@@ -34,7 +34,8 @@ import {
   QrCode,
   Copy,
   Check,
-  RefreshCw
+  RefreshCw,
+  Building2
 } from 'lucide-react';
 import { showToast } from './Toast';
 
@@ -374,6 +375,48 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                 value={formData.defaultTime}
                 onChange={(e) => setFormData({ ...formData, defaultTime: e.target.value })}
                 className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-emerald-500"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Section: Data Kepala Sekolah */}
+        <div className="sports-glass-card p-6 rounded-3xl border-emerald-500/20 space-y-4 shadow-xl">
+          <div className="flex items-center gap-2 text-sm font-bold text-white font-heading uppercase border-b border-slate-800 pb-3">
+            <Building2 className="w-4 h-4 text-emerald-400" />
+            <span>DATA KEPALA SEKOLAH (PENGESAHAN LAPORAN & PDF)</span>
+          </div>
+
+          <p className="text-xs text-slate-400">
+            Nama dan NIP Kepala Sekolah digunakan sebagai tanda tangan pengesahan resmi ("Mengetahui") pada dokumen PDF Rekapitulasi Presensi dan Berita Acara Harian.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            <div>
+              <label className="block text-slate-300 font-bold uppercase mb-1">
+                Nama Kepala Sekolah Lengkap beserta Gelar *
+              </label>
+              <input
+                type="text"
+                value={formData.headmasterName || ''}
+                onChange={(e) => setFormData({ ...formData, headmasterName: e.target.value })}
+                placeholder="Contoh: Drs. I Ketut Sumarta, M.Pd."
+                required
+                className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-emerald-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-slate-300 font-bold uppercase mb-1">
+                NIP Kepala Sekolah *
+              </label>
+              <input
+                type="text"
+                value={formData.headmasterNip || ''}
+                onChange={(e) => setFormData({ ...formData, headmasterNip: e.target.value })}
+                placeholder="Contoh: 196805141994031008"
+                required
+                className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white font-mono focus:outline-none focus:border-emerald-500"
               />
             </div>
           </div>

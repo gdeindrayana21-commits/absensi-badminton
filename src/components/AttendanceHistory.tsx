@@ -32,6 +32,7 @@ import {
 } from 'lucide-react';
 import { showToast } from './Toast';
 import { EditSessionDateModal } from './EditSessionDateModal';
+import { ExportPdfConfirmModal } from './ExportPdfConfirmModal';
 
 interface AttendanceHistoryProps {
   attendanceRecords?: AttendanceRecord[];
@@ -58,6 +59,29 @@ export const AttendanceHistory: React.FC<AttendanceHistoryProps> = ({
     notes: string;
     recordsCount: number;
   } | null>(null);
+  const [pdfSession, setPdfSession] = useState<{
+    records: AttendanceRecord[];
+    date: string;
+    day: string;
+    material: string;
+    startTime: string;
+    endTime: string;
+  } | null>(null);
+
+  const handleConfirmSessionPdf = (customIdentity: SchoolIdentity) => {
+    if (!pdfSession) return;
+    exportDailyAttendancePdf(
+      pdfSession.records,
+      customIdentity,
+      pdfSession.date,
+      pdfSession.day,
+      pdfSession.material,
+      pdfSession.startTime,
+      pdfSession.endTime
+    );
+    showToast(`Berita Acara & Presensi ${pdfSession.date} PDF berhasil diunduh dengan pengesahan Kepala Sekolah! 📄`, 'success');
+    setPdfSession(null);
+  };
 
   // Group records by date
   const sessions = useMemo(() => {
@@ -240,18 +264,17 @@ export const AttendanceHistory: React.FC<AttendanceHistoryProps> = ({
                     </button>
                     <button
                       onClick={() =>
-                        exportDailyAttendancePdf(
-                          session.records,
-                          identity,
-                          session.date,
-                          session.day,
-                          session.material,
-                          session.startTime,
-                          session.endTime
-                        )
+                        setPdfSession({
+                          records: session.records,
+                          date: session.date,
+                          day: session.day,
+                          material: session.material,
+                          startTime: session.startTime,
+                          endTime: session.endTime
+                        })
                       }
-                      className="p-2 rounded-xl bg-slate-900 hover:bg-emerald-950 text-slate-300 hover:text-emerald-400 border border-slate-700 transition-colors"
-                      title="Download PDF Sesi Ini"
+                      className="p-2 rounded-xl bg-slate-900 hover:bg-emerald-950 text-slate-300 hover:text-emerald-400 border border-slate-700 transition-colors cursor-pointer"
+                      title="Download PDF Berita Acara Sesi Ini"
                     >
                       <FileDown className="w-4 h-4" />
                     </button>
@@ -418,6 +441,16 @@ export const AttendanceHistory: React.FC<AttendanceHistoryProps> = ({
           }}
         />
       )}
+
+      {/* Modal Pengesahan Kepala Sekolah Sebelum Unduh PDF */}
+      <ExportPdfConfirmModal
+        isOpen={!!pdfSession}
+        onClose={() => setPdfSession(null)}
+        identity={identity}
+        title="Pengesahan Kepala Sekolah (Cetak Berita Acara PDF)"
+        documentDescription={pdfSession ? `Berita Acara & Presensi Sesi ${pdfSession.date} (${pdfSession.day})` : ''}
+        onConfirmDownload={handleConfirmSessionPdf}
+      />
     </div>
   );
 };

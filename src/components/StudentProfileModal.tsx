@@ -99,11 +99,19 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
       const finalY = (doc as any).lastAutoTable.finalY + 15;
       doc.setFontSize(9);
       doc.text(`Tejakula, ${new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}`, 140, finalY);
+      doc.text('Mengetahui,', 15, finalY + 6);
+      doc.text(`Kepala ${identity.schoolName || 'SMA Negeri 1 Tejakula'}`, 15, finalY + 11);
       doc.text('Guru Pembina Bulutangkis,', 140, finalY + 6);
+
+      doc.setFont('helvetica', 'bold');
+      doc.text(`( ${identity.headmasterName || 'Drs. I Ketut Sumarta, M.Pd.'} )`, 15, finalY + 26);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`NIP. ${identity.headmasterNip || '-'}`, 15, finalY + 31);
+
       doc.setFont('helvetica', 'bold');
       doc.text(identity.teacherName, 140, finalY + 26);
       doc.setFont('helvetica', 'normal');
-      doc.text(`NIPPPK: ${identity.nipppk}`, 140, finalY + 31);
+      doc.text(`NIPPPK: ${identity.nipppk || identity.teacherNip}`, 140, finalY + 31);
 
       doc.save(`Riwayat_Presensi_${student.name.replace(/\s+/g, '_')}.pdf`);
       showToast('Kartu riwayat siswa berhasil diunduh!', 'success');

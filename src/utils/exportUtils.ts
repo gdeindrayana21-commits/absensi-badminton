@@ -189,18 +189,28 @@ export const exportDailyAttendancePdf = (
   });
 
   const finalY = (doc as any).lastAutoTable.finalY + 12;
-  const sigY = finalY + 35 > doc.internal.pageSize.height ? 25 : finalY;
-  if (finalY + 35 > doc.internal.pageSize.height) doc.addPage();
+  const sigY = finalY + 45 > doc.internal.pageSize.height ? 25 : finalY;
+  if (finalY + 45 > doc.internal.pageSize.height) doc.addPage();
 
   doc.setFontSize(9.5);
   doc.text(`Tejakula, ${date}`, 135, sigY);
-  doc.text('Guru Pembina Bulutangkis,', 135, sigY + 5);
-  doc.setFont('helvetica', 'bold');
-  doc.text(identity.teacherName, 135, sigY + 25);
-  doc.setFont('helvetica', 'normal');
-  doc.text(`NIPPPK. ${identity.nipppk || identity.teacherNip}`, 135, sigY + 30);
+  doc.text('Mengetahui,', 20, sigY + 5);
+  doc.text(`Kepala ${identity.schoolName || 'SMA Negeri 1 Tejakula'}`, 20, sigY + 10);
+  doc.text('Guru Pembina Bulutangkis', 135, sigY + 10);
 
-  doc.save(`Presensi_Bulutangkis_${date}_SMAN1Tejakula.pdf`);
+  doc.setFont('helvetica', 'bold');
+  doc.text(`( ${identity.headmasterName || 'Drs. I Ketut Sumarta, M.Pd.'} )`, 20, sigY + 36);
+  doc.setFont('helvetica', 'normal');
+  doc.text(`NIP. ${identity.headmasterNip || '-'}`, 20, sigY + 41);
+
+  doc.setFont('helvetica', 'bold');
+  doc.text(identity.teacherName, 135, sigY + 36);
+  doc.setFont('helvetica', 'normal');
+  doc.text(`NIPPPK. ${identity.nipppk || identity.teacherNip}`, 135, sigY + 41);
+
+  const fileName = `Presensi_Bulutangkis_${date}_SMAN1Tejakula.pdf`;
+  doc.save(fileName);
+  return fileName;
 };
 
 // 3. Export Daily Attendance Excel
@@ -359,7 +369,9 @@ export const exportAttendanceRecapPdf = (
   doc.setFont('helvetica', 'normal');
   doc.text(`NIPPPK. ${identity.nipppk || identity.teacherNip}`, 135, sigY + 41);
 
-  doc.save(`Rekap_Absensi_Bulutangkis_${periodText.replace(/\s+/g, '_')}_SMAN1Tejakula.pdf`);
+  const fileName = `Rekap_Absensi_Bulutangkis_${periodText.replace(/\s+/g, '_')}_SMAN1Tejakula.pdf`;
+  doc.save(fileName);
+  return fileName;
 };
 
 // 6. Download Template Excel for Student Import (Tanpa Kolom Jenis Kelamin)
