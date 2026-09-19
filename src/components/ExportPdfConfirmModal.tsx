@@ -223,8 +223,9 @@ export const ExportPdfConfirmModal: React.FC<ExportPdfConfirmModalProps> = ({
             <div className="bg-white text-slate-900 p-4 rounded-xl text-[11px] font-sans border border-slate-300 shadow-inner grid grid-cols-2 gap-4">
               <div>
                 <p className="text-slate-600">Mengetahui,</p>
+                <p className="text-[10px] text-emerald-700 italic font-medium">Ditandatangani secara elektronik oleh :</p>
                 <p className="font-semibold text-slate-800">Kepala {identity.schoolName || 'SMA Negeri 1 Tejakula'}</p>
-                <div className="h-12 flex items-end">
+                <div className="h-10 flex items-end">
                   <p className="font-bold underline text-slate-900">
                     {headmasterName || '( ........................................ )'}
                   </p>

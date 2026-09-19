@@ -189,24 +189,27 @@ export const exportDailyAttendancePdf = (
   });
 
   const finalY = (doc as any).lastAutoTable.finalY + 12;
-  const sigY = finalY + 45 > doc.internal.pageSize.height ? 25 : finalY;
-  if (finalY + 45 > doc.internal.pageSize.height) doc.addPage();
+  const sigY = finalY + 50 > doc.internal.pageSize.height ? 25 : finalY;
+  if (finalY + 50 > doc.internal.pageSize.height) doc.addPage();
 
   doc.setFontSize(9.5);
-  doc.text(`Tejakula, ${date}`, 135, sigY);
+  doc.text(`Tejakula, ${date}`, 135, sigY + 5);
   doc.text('Mengetahui,', 20, sigY + 5);
-  doc.text(`Kepala ${identity.schoolName || 'SMA Negeri 1 Tejakula'}`, 20, sigY + 10);
-  doc.text('Guru Pembina Bulutangkis', 135, sigY + 10);
+  doc.setFont('helvetica', 'italic');
+  doc.text('Ditandatangani secara elektronik oleh :', 20, sigY + 10);
+  doc.setFont('helvetica', 'normal');
+  doc.text(`Kepala ${identity.schoolName || 'SMA Negeri 1 Tejakula'}`, 20, sigY + 15);
+  doc.text('Guru Pembina Bulutangkis,', 135, sigY + 10);
 
   doc.setFont('helvetica', 'bold');
-  doc.text(`( ${identity.headmasterName || 'Drs. I Ketut Sumarta, M.Pd.'} )`, 20, sigY + 36);
+  doc.text(`( ${identity.headmasterName || 'Drs. I Ketut Sumarta, M.Pd.'} )`, 20, sigY + 38);
   doc.setFont('helvetica', 'normal');
-  doc.text(`NIP. ${identity.headmasterNip || '-'}`, 20, sigY + 41);
+  doc.text(`NIP. ${identity.headmasterNip || '-'}`, 20, sigY + 43);
 
   doc.setFont('helvetica', 'bold');
-  doc.text(identity.teacherName, 135, sigY + 36);
+  doc.text(identity.teacherName, 135, sigY + 38);
   doc.setFont('helvetica', 'normal');
-  doc.text(`NIPPPK. ${identity.nipppk || identity.teacherNip}`, 135, sigY + 41);
+  doc.text(`NIPPPK. ${identity.nipppk || identity.teacherNip}`, 135, sigY + 43);
 
   const fileName = `Presensi_Bulutangkis_${date}_SMAN1Tejakula.pdf`;
   doc.save(fileName);
@@ -344,8 +347,8 @@ export const exportAttendanceRecapPdf = (
   });
 
   const finalY = (doc as any).lastAutoTable.finalY + 12;
-  const sigY = finalY + 45 > doc.internal.pageSize.height ? 25 : finalY;
-  if (finalY + 45 > doc.internal.pageSize.height) doc.addPage();
+  const sigY = finalY + 50 > doc.internal.pageSize.height ? 25 : finalY;
+  if (finalY + 50 > doc.internal.pageSize.height) doc.addPage();
 
   const todayFormatted = new Intl.DateTimeFormat('id-ID', {
     day: 'numeric',
@@ -354,20 +357,23 @@ export const exportAttendanceRecapPdf = (
   }).format(new Date());
 
   doc.setFontSize(9.5);
-  doc.text(`Tejakula, ${todayFormatted}`, 135, sigY);
+  doc.text(`Tejakula, ${todayFormatted}`, 135, sigY + 5);
   doc.text('Mengetahui,', 20, sigY + 5);
-  doc.text('Kepala SMA Negeri 1 Tejakula', 20, sigY + 10);
-  doc.text('Guru Pembina Bulutangkis', 135, sigY + 10);
+  doc.setFont('helvetica', 'italic');
+  doc.text('Ditandatangani secara elektronik oleh :', 20, sigY + 10);
+  doc.setFont('helvetica', 'normal');
+  doc.text(`Kepala ${identity.schoolName || 'SMA Negeri 1 Tejakula'}`, 20, sigY + 15);
+  doc.text('Guru Pembina Bulutangkis,', 135, sigY + 10);
 
   doc.setFont('helvetica', 'bold');
-  doc.text(`( ${identity.headmasterName} )`, 20, sigY + 36);
+  doc.text(`( ${identity.headmasterName || 'Drs. I Ketut Sumarta, M.Pd.'} )`, 20, sigY + 38);
   doc.setFont('helvetica', 'normal');
-  doc.text(`NIP. ${identity.headmasterNip}`, 20, sigY + 41);
+  doc.text(`NIP. ${identity.headmasterNip || '-'}`, 20, sigY + 43);
 
   doc.setFont('helvetica', 'bold');
-  doc.text(identity.teacherName, 135, sigY + 36);
+  doc.text(identity.teacherName, 135, sigY + 38);
   doc.setFont('helvetica', 'normal');
-  doc.text(`NIPPPK. ${identity.nipppk || identity.teacherNip}`, 135, sigY + 41);
+  doc.text(`NIPPPK. ${identity.nipppk || identity.teacherNip}`, 135, sigY + 43);
 
   const fileName = `Rekap_Absensi_Bulutangkis_${periodText.replace(/\s+/g, '_')}_SMAN1Tejakula.pdf`;
   doc.save(fileName);
